@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    # Substitua 'SEU_USUARIO' pelo seu nome de usuário do cPanel da Homehost
+    # Exemplo: export DEPLOYPATH=/home/diretorcarneiro/public_html/
+    - export DEPLOYPATH=/home/$USER/public_html/
+    # Se você fizer o build antes de enviar ao GitHub ou tiver a pasta dist/:
+    - /bin/cp -R dist/* $DEPLOYPATH || /bin/cp -R * $DEPLOYPATH
