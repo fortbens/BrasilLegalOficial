@@ -1,0 +1,128 @@
+{
+  "$schema": "https://firebase.google.com/schemas/blueprint/v1.json",
+  "entities": {
+    "users": {
+      "title": "Usuários do Sistema",
+      "description": "Colaboradores, técnicos e administradores com controle de acesso RBAC",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nome": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "cargo": { "type": "string" },
+        "role": { "type": "string", "enum": ["ADMIN", "TECNICO", "SDR", "PARCEIRO"] },
+        "foto_url": { "type": "string" },
+        "telefone": { "type": "string" },
+        "cpf": { "type": "string" },
+        "oab_crea": { "type": "string" },
+        "data_criacao": { "type": "string" },
+        "ativo": { "type": "boolean" },
+        "google_uid": { "type": "string" }
+      },
+      "required": ["email", "nome", "role"]
+    },
+    "contacts": {
+      "title": "Clientes & Leads",
+      "description": "Base de contatos, proprietários de imóveis e leads qualificados",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nome": { "type": "string" },
+        "telefone": { "type": "string" },
+        "email": { "type": "string" },
+        "endereco": { "type": "string" },
+        "tipo_servico": { "type": "string" },
+        "fase": { "type": "string" },
+        "valor_estimado": { "type": "number" },
+        "status_pagamento": { "type": "string" },
+        "data_criacao": { "type": "string" },
+        "responsavel": { "type": "string" }
+      },
+      "required": ["nome", "telefone"]
+    },
+    "documents": {
+      "title": "Documentos e Dossiês",
+      "description": "Dossiês de regularização, matrículas, certidões e ART/RRT",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "contato_id": { "type": "string" },
+        "contato_nome": { "type": "string" },
+        "nome_documento": { "type": "string" },
+        "tipo": { "type": "string" },
+        "status": { "type": "string" },
+        "data_upload": { "type": "string" },
+        "url": { "type": "string" }
+      },
+      "required": ["nome_documento", "tipo"]
+    },
+    "deals": {
+      "title": "Negócios & Oportunidades",
+      "description": "Pipeline comercial e propostas de regularização",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "contato_id": { "type": "string" },
+        "contato_nome": { "type": "string" },
+        "titulo": { "type": "string" },
+        "valor": { "type": "number" },
+        "etapa": { "type": "string" },
+        "probabilidade": { "type": "number" },
+        "data_criacao": { "type": "string" }
+      },
+      "required": ["titulo", "valor"]
+    },
+    "properties": {
+      "title": "Imóveis Cadastrados",
+      "description": "Cadastro técnico de imóveis urbanos e rurais",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "proprietario_nome": { "type": "string" },
+        "endereco": { "type": "string" },
+        "tipo_imovel": { "type": "string" },
+        "area_m2": { "type": "number" },
+        "matricula_numero": { "type": "string" },
+        "status_regularizacao": { "type": "string" }
+      },
+      "required": ["endereco", "tipo_imovel"]
+    },
+    "financial_records": {
+      "title": "Gestão Financeira",
+      "description": "Lançamentos de contas a receber e a pagar",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "tipo": { "type": "string", "enum": ["RECEITA", "DESPESA"] },
+        "descricao": { "type": "string" },
+        "categoria": { "type": "string" },
+        "valor": { "type": "number" },
+        "data": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["tipo", "descricao", "valor"]
+    },
+    "site_settings": {
+      "title": "Configurações do Site",
+      "description": "Conteúdo e identidade visual da página pública",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nome_escritorio": { "type": "string" },
+        "whatsapp_vendas": { "type": "string" },
+        "rodape_email": { "type": "string" }
+      }
+    },
+    "app_settings": {
+      "title": "Configurações do Sistema",
+      "description": "Parâmetros white-label da plataforma Brasil Legal",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nome_sistema": { "type": "string" },
+        "whatsapp_suporte": { "type": "string" },
+        "email_suporte": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Brasil Legal — Regularização Imobiliária",
+  "description": "Plataforma integrada de Regularização Imobiliária e Gestão de Ativos com motor de inteligência Google Gemini, CRM técnico, gestão documental e comissões B2B.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

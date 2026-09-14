@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="icoGold1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3A8"/>
+      <stop offset="30%" stop-color="#E5C04A"/>
+      <stop offset="70%" stop-color="#C59B27"/>
+      <stop offset="100%" stop-color="#8F6B12"/>
+    </linearGradient>
+    <linearGradient id="icoGold2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDF0B2"/>
+      <stop offset="50%" stop-color="#D4AA33"/>
+      <stop offset="100%" stop-color="#9B751A"/>
+    </linearGradient>
+    <linearGradient id="icoGold3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8C762"/>
+      <stop offset="50%" stop-color="#BA9025"/>
+      <stop offset="100%" stop-color="#7B5B11"/>
+    </linearGradient>
+    <filter id="icoShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0F102B" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  
+  <g transform="translate(18, 10)" filter="url(#icoShadow)">
+    <!-- 3rd Document (Back) -->
+    <g transform="translate(34, 12) rotate(14)">
+      <rect x="0" y="0" width="48" height="66" rx="7" fill="url(#icoGold3)" stroke="#7B5B11" stroke-width="1.2"/>
+    </g>
+
+    <!-- 2nd Document (Middle) -->
+    <g transform="translate(18, 6) rotate(6)">
+      <rect x="0" y="0" width="48" height="66" rx="7" fill="url(#icoGold2)" stroke="#9B751A" stroke-width="1.2"/>
+      <line x1="10" y1="18" x2="38" y2="18" stroke="#7A580F" stroke-width="2.2" stroke-linecap="round" opacity="0.6"/>
+      <line x1="10" y1="28" x2="38" y2="28" stroke="#7A580F" stroke-width="2.2" stroke-linecap="round" opacity="0.6"/>
+    </g>
+
+    <!-- 1st Document (Front) -->
+    <g transform="translate(0, 0)">
+      <path d="M14 0 H46 C50 0 53 3 53 7 V64 C53 68 50 71 46 71 H7 C3 71 0 68 0 64 V14 L14 0 Z" fill="url(#icoGold1)" stroke="#8F6B12" stroke-width="1.4"/>
+      <path d="M0 14 H10 C12 14 14 12 14 10 V0 L0 14 Z" fill="#FFF8C6" stroke="#9E7618" stroke-width="1"/>
+      
+      <rect x="10" y="21" width="32" height="3.5" rx="1.5" fill="#7A580F"/>
+      <rect x="10" y="30" width="32" height="3.5" rx="1.5" fill="#7A580F"/>
+      <rect x="10" y="39" width="32" height="3.5" rx="1.5" fill="#7A580F"/>
+      <rect x="10" y="48" width="20" height="3.5" rx="1.5" fill="#7A580F"/>
+
+      <path d="M18 3 L48 3 C49 3 50 4 50 5 L50 44 L18 3 Z" fill="#FFFFFF" opacity="0.22"/>
+    </g>
+  </g>
+</svg>
