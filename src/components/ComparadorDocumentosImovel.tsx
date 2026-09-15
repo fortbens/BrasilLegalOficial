@@ -177,6 +177,9 @@ export const ComparadorDocumentosImovel: React.FC<ComparadorDocumentosImovelProp
         })
       });
 
+      if (!res.ok || !res.headers.get('content-type')?.includes('application/json')) {
+        throw new Error('Servidor não retornou JSON válido.');
+      }
       const data = await res.json();
       if (data.resultado) {
         setResultado(data.resultado);

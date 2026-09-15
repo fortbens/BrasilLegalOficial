@@ -82,7 +82,7 @@ export const GerenciadorLogosSistema: React.FC<GerenciadorLogosSistemaProps> = (
           filename: `${prefix}_${Date.now()}`
         })
       });
-      if (res.ok) {
+      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const data = await res.json();
         if (data.url) return data.url;
       }

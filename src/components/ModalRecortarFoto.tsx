@@ -263,7 +263,7 @@ export const ModalRecortarFoto: React.FC<ModalRecortarFotoProps> = ({
         );
         const res = await Promise.race([uploadReq, uploadTimeout]);
 
-        if (res.ok) {
+        if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
           const json = await res.json();
           if (json.url) {
             finalUrl = json.url;

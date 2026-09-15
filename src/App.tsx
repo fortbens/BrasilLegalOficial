@@ -103,6 +103,19 @@ import {
 
 export type AppViewMode = 'site' | 'painel' | 'login';
 
+// Utilitário de parsing seguro de respostas JSON para evitar SyntaxError quando o servidor retornar HTML (ex: fallback 404 do Apache/cPanel)
+export async function safeFetchJson<T = any>(promiseOrRes: Promise<Response> | Response): Promise<T | null> {
+  try {
+    const res = await promiseOrRes;
+    if (!res || !res.ok) return null;
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
 const getInitialViewMode = (): AppViewMode => {
   if (typeof window !== 'undefined') {
     const hash = window.location.hash.toLowerCase();
@@ -418,206 +431,151 @@ export default function App() {
   const refreshAllData = async () => {
     try {
       const [
-        resContacts, 
-        resDocs, 
-        resDeals, 
-        resCms,
-        resAppSettings,
-        resRoles,
-        resUsers,
-        resProperties,
-        resFinRecords,
-        resReferral,
-        resCobrancas,
-        resFintechs,
-        resContratos,
-        resConfigAssinatura,
-        resConversas,
-        resInstancia,
-        resOmniConfig,
-        resSplitsConfig,
-        resSplitsRegistros
+        dataContacts, 
+        dataDocs, 
+        dataDeals, 
+        dataCms,
+        dataAppSettings,
+        dataRoles,
+        dataUsers,
+        dataProperties,
+        dataFinRecords,
+        dataReferral,
+        dataCobrancas,
+        dataFintechs,
+        dataContratos,
+        dataConfigAssinatura,
+        dataConversas,
+        dataInstancia,
+        dataOmniConfig,
+        dataSplitsConfig,
+        dataSplitsRegistros
       ] = await Promise.all([
-        fetch('/api/contacts'),
-        fetch('/api/documents'),
-        fetch('/api/deals'),
-        fetch('/api/cms'),
-        fetch('/api/app-settings'),
-        fetch('/api/roles'),
-        fetch('/api/users'),
-        fetch('/api/properties'),
-        fetch('/api/financial-records'),
-        fetch('/api/referral-program'),
-        fetch('/api/cobrancas'),
-        fetch('/api/fintechs'),
-        fetch('/api/contratos-assinatura'),
-        fetch('/api/contratos-assinatura-config'),
-        fetch('/api/whatsapp/conversas'),
-        fetch('/api/whatsapp/instancia'),
-        fetch('/api/omnichannel/config'),
-        fetch('/api/splits/config'),
-        fetch('/api/splits/registros')
+        safeFetchJson(fetch('/api/contacts')),
+        safeFetchJson(fetch('/api/documents')),
+        safeFetchJson(fetch('/api/deals')),
+        safeFetchJson(fetch('/api/cms')),
+        safeFetchJson(fetch('/api/app-settings')),
+        safeFetchJson(fetch('/api/roles')),
+        safeFetchJson(fetch('/api/users')),
+        safeFetchJson(fetch('/api/properties')),
+        safeFetchJson(fetch('/api/financial-records')),
+        safeFetchJson(fetch('/api/referral-program')),
+        safeFetchJson(fetch('/api/cobrancas')),
+        safeFetchJson(fetch('/api/fintechs')),
+        safeFetchJson(fetch('/api/contratos-assinatura')),
+        safeFetchJson(fetch('/api/contratos-assinatura-config')),
+        safeFetchJson(fetch('/api/whatsapp/conversas')),
+        safeFetchJson(fetch('/api/whatsapp/instancia')),
+        safeFetchJson(fetch('/api/omnichannel/config')),
+        safeFetchJson(fetch('/api/splits/config')),
+        safeFetchJson(fetch('/api/splits/registros'))
       ]);
 
-      if (resContacts.ok) {
-        const data = await resContacts.json();
-        if (data.contacts && Array.isArray(data.contacts)) {
-          setContacts(data.contacts);
-          try {
-            localStorage.setItem('brasil_legal_contacts', JSON.stringify(data.contacts));
-          } catch (e) {}
+      if (dataContacts?.contacts && Array.isArray(dataContacts.contacts)) {
+        setContacts(dataContacts.contacts);
+        try {
+          localStorage.setItem('brasil_legal_contacts', JSON.stringify(dataContacts.contacts));
+        } catch (e) {}
+      }
+      if (dataDocs?.documents && Array.isArray(dataDocs.documents)) {
+        setDocuments(dataDocs.documents);
+        try {
+          localStorage.setItem('brasil_legal_documents', JSON.stringify(dataDocs.documents));
+        } catch (e) {}
+      }
+      if (dataDeals?.deals && Array.isArray(dataDeals.deals)) {
+        setDeals(dataDeals.deals);
+        try {
+          localStorage.setItem('brasil_legal_deals', JSON.stringify(dataDeals.deals));
+        } catch (e) {}
+      }
+      if (dataCms?.settings) {
+        const s = dataCms.settings;
+        if (!s.logo_principal_url || s.logo_principal_url === '/assets/logo-brasil-legal.svg' || s.logo_principal_url.includes('brasillegalimoveis.com.br')) {
+          s.logo_principal_url = '/assets/logo-brasil-legal-oficial.png';
         }
-      }
-      if (resDocs.ok) {
-        const data = await resDocs.json();
-        if (data.documents && Array.isArray(data.documents)) {
-          setDocuments(data.documents);
-          try {
-            localStorage.setItem('brasil_legal_documents', JSON.stringify(data.documents));
-          } catch (e) {}
+        if (!s.logo_footer_url || s.logo_footer_url.includes('brasillegalimoveis.com.br')) {
+          s.logo_footer_url = '/assets/logo-brasil-legal-dark.svg';
         }
-      }
-      if (resDeals.ok) {
-        const data = await resDeals.json();
-        if (data.deals && Array.isArray(data.deals)) {
-          setDeals(data.deals);
-          try {
-            localStorage.setItem('brasil_legal_deals', JSON.stringify(data.deals));
-          } catch (e) {}
+        if (!s.rodape_email || s.rodape_email.includes('brasillegalimoveis.com.br') || s.rodape_email === 'diretorcarneiro@gmail.com') {
+          s.rodape_email = 'atendimento@brasillegal.com.br';
         }
-      }
-      if (resCms.ok) {
-        const data = await resCms.json();
-        if (data.settings) {
-          const s = data.settings;
-          if (!s.logo_principal_url || s.logo_principal_url === '/assets/logo-brasil-legal.svg' || s.logo_principal_url.includes('brasillegalimoveis.com.br')) {
-            s.logo_principal_url = '/assets/logo-brasil-legal-oficial.png';
-          }
-          if (!s.logo_footer_url || s.logo_footer_url.includes('brasillegalimoveis.com.br')) {
-            s.logo_footer_url = '/assets/logo-brasil-legal-dark.svg';
-          }
-          if (!s.rodape_email || s.rodape_email.includes('brasillegalimoveis.com.br') || s.rodape_email === 'diretorcarneiro@gmail.com') {
-            s.rodape_email = 'atendimento@brasillegal.com.br';
-          }
-          if (!s.whatsapp_vendas) {
-            s.whatsapp_vendas = '+55 11 99864-2424';
-          }
-          setSiteSettings(s);
-          try {
-            localStorage.setItem('brasil_legal_site_settings', JSON.stringify(s));
-          } catch (e) {}
+        if (!s.whatsapp_vendas) {
+          s.whatsapp_vendas = '+55 11 99864-2424';
         }
+        setSiteSettings(s);
+        try {
+          localStorage.setItem('brasil_legal_site_settings', JSON.stringify(s));
+        } catch (e) {}
       }
-      if (resAppSettings.ok) {
-        const data = await resAppSettings.json();
-        if (data.settings) {
-          const a = data.settings;
-          if (!a.logo_header_url || a.logo_header_url === '/assets/logo-brasil-legal.svg' || a.logo_header_url.includes('brasillegalimoveis.com.br')) {
-            a.logo_header_url = '/assets/logo-brasil-legal-oficial.png';
-          }
-          if (!a.logo_light_url || a.logo_light_url === '/assets/logo-brasil-legal-light.svg' || a.logo_light_url.includes('brasillegalimoveis.com.br')) {
-            a.logo_light_url = '/assets/logo-brasil-legal-oficial.png';
-          }
-          if (!a.logo_dark_url || a.logo_dark_url.includes('brasillegalimoveis.com.br')) {
-            a.logo_dark_url = '/assets/logo-brasil-legal-dark.svg';
-          }
-          if (!a.logo_icon_url || a.logo_icon_url.includes('brasillegalimoveis.com.br')) {
-            a.logo_icon_url = '/assets/logo-icon-brasil-legal.svg';
-          }
-          if (!a.logo_sidebar_url) {
-            a.logo_sidebar_url = a.logo_icon_url || a.logo_header_url || '/assets/logo-brasil-legal-oficial.png';
-          }
-          if (!a.logo_login_url) {
-            a.logo_login_url = a.logo_header_url || a.logo_light_url || '/assets/logo-brasil-legal-oficial.png';
-          }
-          if (!a.email_suporte || a.email_suporte.includes('brasillegalimoveis.com.br') || a.email_suporte === 'diretorcarneiro@gmail.com') {
-            a.email_suporte = 'atendimento@brasillegal.com.br';
-          }
-          if (!a.whatsapp_suporte) {
-            a.whatsapp_suporte = '+55 11 99864-2424';
-          }
-          setAppSettings(a);
-          try {
-            localStorage.setItem('brasil_legal_app_settings', JSON.stringify(a));
-          } catch (e) {}
+      if (dataAppSettings?.settings) {
+        const a = dataAppSettings.settings;
+        if (!a.logo_header_url || a.logo_header_url === '/assets/logo-brasil-legal.svg' || a.logo_header_url.includes('brasillegalimoveis.com.br')) {
+          a.logo_header_url = '/assets/logo-brasil-legal-oficial.png';
         }
-      }
-      if (resRoles.ok) {
-        const data = await resRoles.json();
-        if (data.roles) setRoleConfigs(data.roles);
-      }
-      if (resUsers.ok) {
-        const data = await resUsers.json();
-        if (data.users && Array.isArray(data.users) && data.users.length > 0) {
-          setAllUsers(data.users);
-          try {
-            localStorage.setItem('brasil_legal_all_users', JSON.stringify(data.users));
-          } catch (e) {}
-          // Mantém currentUser perfeitamente sincronizado se seus dados ou fotos foram alterados
-          setCurrentUser(prevCurrent => {
-            const freshCurrent = data.users.find((u: Usuario) => u.id === prevCurrent.id || u.email.toLowerCase() === prevCurrent.email.toLowerCase());
-            if (freshCurrent) {
-              try {
-                localStorage.setItem('brasil_legal_session_user', JSON.stringify(freshCurrent));
-              } catch (e) {}
-              return freshCurrent;
-            }
-            return prevCurrent;
-          });
+        if (!a.logo_light_url || a.logo_light_url === '/assets/logo-brasil-legal-light.svg' || a.logo_light_url.includes('brasillegalimoveis.com.br')) {
+          a.logo_light_url = '/assets/logo-brasil-legal-oficial.png';
         }
+        if (!a.logo_dark_url || a.logo_dark_url.includes('brasillegalimoveis.com.br')) {
+          a.logo_dark_url = '/assets/logo-brasil-legal-dark.svg';
+        }
+        if (!a.logo_icon_url || a.logo_icon_url.includes('brasillegalimoveis.com.br')) {
+          a.logo_icon_url = '/assets/logo-icon-brasil-legal.svg';
+        }
+        if (!a.logo_sidebar_url) {
+          a.logo_sidebar_url = a.logo_icon_url || a.logo_header_url || '/assets/logo-brasil-legal-oficial.png';
+        }
+        if (!a.logo_login_url) {
+          a.logo_login_url = a.logo_header_url || a.logo_light_url || '/assets/logo-brasil-legal-oficial.png';
+        }
+        if (!a.email_suporte || a.email_suporte.includes('brasillegalimoveis.com.br') || a.email_suporte === 'diretorcarneiro@gmail.com') {
+          a.email_suporte = 'atendimento@brasillegal.com.br';
+        }
+        if (!a.whatsapp_suporte) {
+          a.whatsapp_suporte = '+55 11 99864-2424';
+        }
+        setAppSettings(a);
+        try {
+          localStorage.setItem('brasil_legal_app_settings', JSON.stringify(a));
+        } catch (e) {}
       }
-      if (resProperties.ok) {
-        const data = await resProperties.json();
-        if (data.properties) setProperties(data.properties);
+      if (dataRoles?.roles) {
+        setRoleConfigs(dataRoles.roles);
       }
-      if (resFinRecords.ok) {
-        const data = await resFinRecords.json();
-        if (data.records) setFinancialRecords(data.records);
+      if (dataUsers?.users && Array.isArray(dataUsers.users) && dataUsers.users.length > 0) {
+        setAllUsers(dataUsers.users);
+        try {
+          localStorage.setItem('brasil_legal_all_users', JSON.stringify(dataUsers.users));
+        } catch (e) {}
+        setCurrentUser(prevCurrent => {
+          const freshCurrent = dataUsers.users.find((u: Usuario) => u.id === prevCurrent.id || u.email.toLowerCase() === prevCurrent.email.toLowerCase());
+          if (freshCurrent) {
+            try {
+              localStorage.setItem('brasil_legal_session_user', JSON.stringify(freshCurrent));
+            } catch (e) {}
+            return freshCurrent;
+          }
+          return prevCurrent;
+        });
       }
-      if (resReferral.ok) {
-        const data = await resReferral.json();
-        if (data.settings) setReferralSettings(data.settings);
-      }
-      if (resCobrancas.ok) {
-        const data = await resCobrancas.json();
-        if (data.cobrancas) setCobrancas(data.cobrancas);
-      }
-      if (resFintechs.ok) {
-        const data = await resFintechs.json();
-        if (data.fintechs) setFintechs(data.fintechs);
-      }
-      if (resContratos.ok) {
-        const data = await resContratos.json();
-        if (data.contratos) setContratosAssinatura(data.contratos);
-      }
-      if (resConfigAssinatura.ok) {
-        const data = await resConfigAssinatura.json();
-        if (data.config) setConfigAssinatura(data.config);
-      }
-      if (resConversas && resConversas.ok) {
-        const data = await resConversas.json();
-        if (data.conversas) setConversasWhatsApp(data.conversas);
-      }
-      if (resInstancia && resInstancia.ok) {
-        const data = await resInstancia.json();
-        if (data.instancia) setInstanciaWhatsApp(data.instancia);
-      }
-      if (resOmniConfig && resOmniConfig.ok) {
-        const data = await resOmniConfig.json();
-        if (data.config) setOmnichannelConfig(data.config);
-      }
-      if (resSplitsConfig && resSplitsConfig.ok) {
-        const data = await resSplitsConfig.json();
-        if (data.config) setConfigSplitBancario(data.config);
-      }
-      if (resSplitsRegistros && resSplitsRegistros.ok) {
-        const data = await resSplitsRegistros.json();
-        if (data.registros) setRegistrosSplits(data.registros);
-      }
-    } catch (err) {
-      console.warn('Usando dados locais sincronizados:', err);
+      if (dataProperties?.properties) setProperties(dataProperties.properties);
+      if (dataFinRecords?.records) setFinancialRecords(dataFinRecords.records);
+      if (dataReferral?.settings) setReferralSettings(dataReferral.settings);
+      if (dataCobrancas?.cobrancas) setCobrancas(dataCobrancas.cobrancas);
+      if (dataFintechs?.fintechs) setFintechs(dataFintechs.fintechs);
+      if (dataContratos?.contratos) setContratosAssinatura(dataContratos.contratos);
+      if (dataConfigAssinatura?.config) setConfigAssinatura(dataConfigAssinatura.config);
+      if (dataConversas?.conversas) setConversasWhatsApp(dataConversas.conversas);
+      if (dataInstancia?.instancia) setInstanciaWhatsApp(dataInstancia.instancia);
+      if (dataOmniConfig?.config) setOmnichannelConfig(dataOmniConfig.config);
+      if (dataSplitsConfig?.config) setConfigSplitBancario(dataSplitsConfig.config);
+      if (dataSplitsRegistros?.registros) setRegistrosSplits(dataSplitsRegistros.registros);
+    } catch {
+      // Falha silenciosa: usa os dados cacheados/locais sem erro e sem recarregamento
     }
   };
+
 
   const handleUpdateConversa = async (conversaId: string, updates: Partial<ConversaWhatsApp>) => {
     setConversasWhatsApp(prev => prev.map(c => c.id === conversaId ? { ...c, ...updates } : c));
@@ -711,13 +669,13 @@ export default function App() {
         body: JSON.stringify({ cobranca_id: cobrancaId })
       });
       if (res.ok) {
-        const data = await res.json();
-        if (data.cobranca) {
+        const data = await safeFetchJson(res);
+        if (data && data.cobranca) {
           setCobrancas(prev =>
             prev.map(c => c.id === cobrancaId ? { ...c, status: 'Pago', data_pagamento: data.cobranca.data_pagamento, split_executado: data.registro } : c)
           );
         }
-        if (data.registro) {
+        if (data && data.registro) {
           setRegistrosSplits(prev => [data.registro, ...prev]);
           const valorFormatado = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(data.registro.valor_total_pago);
           sendDesktopNotification({
@@ -922,8 +880,8 @@ export default function App() {
         body: JSON.stringify(newContact)
       });
       if (res.ok) {
-        const data = await res.json();
-        if (data.contact) {
+        const data = await safeFetchJson(res);
+        if (data?.contact) {
           setContacts(prev => {
             const next = [data.contact, ...prev.filter(c => c.id !== data.contact.id && c.id !== newContact.id)];
             try {
@@ -932,7 +890,7 @@ export default function App() {
             return next;
           });
         }
-        if (data.deal) {
+        if (data?.deal) {
           setDeals(prev => {
             const next = [data.deal, ...prev.filter(d => d.id !== data.deal.id && d.contact_id !== newContact.id)];
             try {
@@ -1040,8 +998,19 @@ export default function App() {
         body: JSON.stringify(docData)
       });
       if (res.ok) {
-        const data = await res.json();
-        setDocuments(prev => [data.document, ...prev]);
+        const data = await safeFetchJson(res);
+        if (data?.document) {
+          setDocuments(prev => [data.document, ...prev]);
+        } else {
+          const localDoc: Documento = {
+            id: `doc-${Date.now()}`,
+            status_validacao: 'Pendente',
+            upload_na_qualificacao: true,
+            data_upload: new Date().toISOString(),
+            ...(docData as Documento)
+          };
+          setDocuments(prev => [localDoc, ...prev]);
+        }
       } else {
         const localDoc: Documento = {
           id: `doc-${Date.now()}`,
@@ -1131,8 +1100,10 @@ export default function App() {
         body: JSON.stringify(boletoData)
       });
       if (res.ok) {
-        const data = await res.json();
-        setCobrancas(prev => [data.cobranca, ...prev]);
+        const data = await safeFetchJson(res);
+        if (data?.cobranca) {
+          setCobrancas(prev => [data.cobranca, ...prev]);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -1392,8 +1363,8 @@ Analise os requisitos do Provimento 65/2017 do CNJ e Art. 216-A da Lei de Regist
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, customTemperature: 0.2, customTopP: 0.95 })
       });
-      const data = await res.json();
-      if (data.response_text) {
+      const data = await safeFetchJson(res);
+      if (data?.response_text) {
         setDeals(prev =>
           prev.map(d => (d.id === deal.id ? { ...d, parecer_tecnico: data.response_text } : d))
         );
@@ -1422,8 +1393,8 @@ Analise os requisitos do Provimento 65/2017 do CNJ e Art. 216-A da Lei de Regist
           body: JSON.stringify({ dataUrl: val, filename: `${key}_${Date.now()}` })
         });
         if (res.ok) {
-          const d = await res.json();
-          if (d.url) return d.url;
+          const d = await safeFetchJson(res);
+          if (d?.url) return d.url;
         }
       } catch (e) {
         console.warn('Erro ao enviar upload em handleSaveAppSettings:', e);
@@ -1525,8 +1496,8 @@ Analise os requisitos do Provimento 65/2017 do CNJ e Art. 216-A da Lei de Regist
         body: JSON.stringify(userData)
       });
       if (res.ok) {
-        const data = await res.json();
-        if (data.user) {
+        const data = await safeFetchJson(res);
+        if (data?.user) {
           setAllUsers(prev => {
             const next = prev.map(u => (u.id === tempId ? data.user : u));
             try {
@@ -1578,8 +1549,8 @@ Analise os requisitos do Provimento 65/2017 do CNJ e Art. 216-A da Lei de Regist
         body: JSON.stringify(updatedData)
       });
       if (res.ok) {
-        const data = await res.json();
-        if (data.user) {
+        const data = await safeFetchJson(res);
+        if (data?.user) {
           setAllUsers(prev => {
             const next = prev.map(u => (u.id === userId ? data.user : u));
             try {

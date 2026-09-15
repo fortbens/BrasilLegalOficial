@@ -178,7 +178,7 @@ export const ModuloWhatsAppMultiatendimento: React.FC<ModuloWhatsAppMultiatendim
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ conversaId: selectedConversa.id })
       });
-      if (res.ok) {
+      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const data = await res.json();
         if (data.qualificacao) {
           setConversas(prev => prev.map(c => 

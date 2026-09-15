@@ -120,6 +120,9 @@ Assine ao final com: Dr. Emerson Carneiro - Diretor Técnico Registral | Brasil 
         })
       });
 
+      if (!res.ok || !res.headers.get('content-type')?.includes('application/json')) {
+        throw new Error('Servidor não retornou JSON válido.');
+      }
       const data = await res.json();
       if (data.response_text) {
         setParecerTexto(data.response_text);

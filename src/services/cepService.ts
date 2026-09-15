@@ -35,7 +35,7 @@ export async function buscarEnderecoPorCep(cepInput: string): Promise<EnderecoVi
   // 1. Tentar endpoint interno (/api/cep/:cep) para evitar CORS e restrições de rede
   try {
     const resServer = await fetch(`/api/cep/${cepLimpo}`);
-    if (resServer.ok) {
+    if (resServer.ok && resServer.headers.get('content-type')?.includes('application/json')) {
       const data = await resServer.json();
       if (data && !data.erro && data.logradouro !== undefined) {
         return {

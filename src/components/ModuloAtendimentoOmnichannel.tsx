@@ -473,7 +473,7 @@ export const ModuloAtendimentoOmnichannel: React.FC<ModuloAtendimentoOmnichannel
         })
       });
 
-      if (response.ok) {
+      if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
         const data = await response.json();
         if (data.conversa) {
           setConversas(prev => prev.map(c => c.id === selectedConversa.id ? data.conversa : c));
@@ -678,7 +678,7 @@ export const ModuloAtendimentoOmnichannel: React.FC<ModuloAtendimentoOmnichannel
         })
       });
 
-      if (res.ok) {
+      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const data = await res.json();
         setTestePlaygroundResposta(data.iaResult?.mensagem_resposta_ia || 'Resposta gerada com sucesso.');
       } else {

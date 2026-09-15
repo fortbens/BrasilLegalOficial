@@ -84,7 +84,7 @@ export const ModuloCmsSite: React.FC<ModuloCmsSiteProps> = ({
   useEffect(() => {
     // 1. Busca API backend local
     fetch('/api/deploy/github-cpanel')
-      .then(r => r.ok ? r.json() : null)
+      .then(r => (r && r.ok && r.headers.get('content-type')?.includes('application/json')) ? r.json() : null)
       .then(data => {
         if (data?.config) setConfigDeploy(data.config);
       })
@@ -118,7 +118,7 @@ export const ModuloCmsSite: React.FC<ModuloCmsSiteProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ commit_mensagem: commitMsg })
       });
-      if (res.ok) {
+      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const data = await res.json();
         if (data.config) {
           setConfigDeploy(data.config);

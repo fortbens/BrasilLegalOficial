@@ -83,6 +83,9 @@ export const AiStudioEngine: React.FC<AiStudioEngineProps> = ({
         })
       });
 
+      if (!res.ok || !res.headers.get('content-type')?.includes('application/json')) {
+        throw new Error('Servidor indisponível ou resposta não formatada em JSON.');
+      }
       const data = await res.json();
       setResponseResult(data);
       if (onRefreshData && data.executed_tool) {

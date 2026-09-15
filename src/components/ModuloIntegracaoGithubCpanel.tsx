@@ -100,7 +100,7 @@ export const ModuloIntegracaoGithubCpanel: React.FC<ModuloIntegracaoGithubCpanel
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ commit_mensagem: commitMsg })
         });
-        if (res.ok) {
+        if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
           const data = await res.json();
           if (data.config) {
             setFormData(data.config);
