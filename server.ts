@@ -1198,6 +1198,390 @@ Retorne ESTRITAMENTE em formato JSON:
     });
   });
 
+  // ==========================================
+  // CONECTORES REAIS: EVOLUTION API, Z-API & META INSTAGRAM DIRECT
+  // ==========================================
+
+  // Conectar Instância WhatsApp (Evolution API, Z-API ou Meta Cloud API)
+  app.post('/api/omnichannel/whatsapp/connect', async (req, res) => {
+    try {
+      const { 
+        provedor, 
+        evolution_api_url, 
+        evolution_api_key, 
+        evolution_instance_name, 
+        zapi_instance_id, 
+        zapi_token, 
+        meta_whatsapp_phone_number_id, 
+        meta_whatsapp_access_token 
+      } = req.body;
+
+      if (!instanciaWhatsAppDb.conexao) {
+        instanciaWhatsAppDb.conexao = { provedor: provedor || 'evolution' };
+      }
+      instanciaWhatsAppDb.conexao = {
+        ...instanciaWhatsAppDb.conexao,
+        ...req.body
+      };
+
+      if (provedor === 'evolution') {
+        const baseUrl = (evolution_api_url || '').replace(/\/$/, '');
+        const instance = evolution_instance_name || 'brasillegal-central';
+        const apiKey = evolution_api_key || '';
+
+        if (!baseUrl) {
+          return res.status(400).json({ 
+            success: false, 
+            error: 'URL da Evolution API é obrigatória (ex: https://evolution.seudominio.com)' 
+          });
+        }
+
+        try {
+          // 1. Tenta buscar conexão / QR Code na Evolution API
+          const response = await fetch(`${baseUrl}/instance/connect/${encodeURIComponent(instance)}`, {
+            method: 'GET',
+            headers: {
+              'apikey': apiKey,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const data: any = await response.json();
+            const base64Qr = data?.base64 || data?.qrcode?.base64 || data?.code;
+            const state = data?.instance?.state || data?.state;
+
+            if (base64Qr) {
+              instanciaWhatsAppDb.qr_code_base64 = base64Qr.startsWith('data:image') ? base64Qr : `data:image/png;base64,${base64Qr}`;
+              instanciaWhatsAppDb.status = 'Aguardando_QR';
+            } else if (state === 'open' || state === 'connected') {
+              instanciaWhatsAppDb.status = 'Conectado';
+              instanciaWhatsAppDb.qr_code_base64 = undefined;
+            }
+
+            saveDbToDisk();
+            return res.json({
+              success: true,
+              provedor: 'evolution',
+              status: instanciaWhatsAppDb.status,
+              qr_code_base64: instanciaWhatsAppDb.qr_code_base64,
+              raw: data
+            });
+          } else {
+            const errText = await response.text();
+            return res.status(response.status).json({
+              success: false,
+              error: `Evolution API retornou status ${response.status}: ${errText}`
+            });
+          }
+        } catch (fetchErr: any) {
+          return res.status(502).json({
+            success: false,
+            error: `Não foi possível conectar ao servidor da Evolution API (${baseUrl}): ${fetchErr.message}`
+          });
+        }
+      } else if (provedor === 'zapi') {
+        const instanceId = zapi_instance_id;
+        const token = zapi_token;
+        if (!instanceId || !token) {
+          return res.status(400).json({ success: false, error: 'Instance ID e Token da Z-API são obrigatórios.' });
+        }
+        try {
+          const response = await fetch(`https://api.z-api.io/instances/${instanceId}/token/${token}/qr-code/image`);
+          if (response.ok) {
+            const data: any = await response.json();
+            const qrImage = data?.value || data?.link;
+            instanciaWhatsAppDb.qr_code_base64 = qrImage;
+            instanciaWhatsAppDb.status = 'Aguardando_QR';
+            saveDbToDisk();
+            return res.json({ success: true, provedor: 'zapi', qr_code_base64: qrImage });
+          } else {
+            return res.status(response.status).json({ success: false, error: 'Erro ao consultar QR Code na Z-API.' });
+          }
+        } catch (e: any) {
+          return res.status(502).json({ success: false, error: `Erro na Z-API: ${e.message}` });
+        }
+      } else if (provedor === 'meta_cloud') {
+        const phoneId = meta_whatsapp_phone_number_id;
+        const token = meta_whatsapp_access_token;
+        if (!phoneId || !token) {
+          return res.status(400).json({ success: false, error: 'Phone Number ID e Access Token da Meta são obrigatórios.' });
+        }
+        try {
+          const metaRes = await fetch(`https://graph.facebook.com/v19.0/${phoneId}?access_token=${encodeURIComponent(token)}`);
+          if (metaRes.ok) {
+            const metaData: any = await metaRes.json();
+            instanciaWhatsAppDb.status = 'Conectado';
+            instanciaWhatsAppDb.numero_vinculado = metaData.display_phone_number || '+55 11 99864-2424';
+            instanciaWhatsAppDb.qr_code_base64 = undefined;
+            saveDbToDisk();
+            return res.json({ success: true, provedor: 'meta_cloud', status: 'Conectado', metaData });
+          } else {
+            const errData: any = await metaRes.json();
+            return res.status(metaRes.status).json({ success: false, error: errData.error?.message || 'Erro ao validar na Meta' });
+          }
+        } catch (err: any) {
+          return res.status(502).json({ success: false, error: err.message });
+        }
+      }
+
+      return res.json({ success: true, status: instanciaWhatsAppDb.status });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Desconectar Instância WhatsApp
+  app.post('/api/omnichannel/whatsapp/disconnect', (req, res) => {
+    instanciaWhatsAppDb.status = 'Desconectado';
+    instanciaWhatsAppDb.qr_code_base64 = undefined;
+    saveDbToDisk();
+    res.json({ success: true, status: 'Desconectado' });
+  });
+
+  // Salvar / Obter Configurações do Instagram Direct
+  app.get('/api/omnichannel/instagram/config', (req, res) => {
+    res.json({ config: instanciaWhatsAppDb.instagram_meta || {} });
+  });
+
+  app.put('/api/omnichannel/instagram/config', (req, res) => {
+    instanciaWhatsAppDb.instagram_meta = {
+      ...instanciaWhatsAppDb.instagram_meta,
+      ...req.body
+    };
+    saveDbToDisk();
+    res.json({ success: true, config: instanciaWhatsAppDb.instagram_meta });
+  });
+
+  // Testar conexão Meta Graph API (Instagram Direct)
+  app.post('/api/omnichannel/instagram/test-connection', async (req, res) => {
+    const { meta_access_token, meta_instagram_account_id } = req.body;
+    const token = meta_access_token || instanciaWhatsAppDb.instagram_meta?.meta_access_token;
+    const instaId = meta_instagram_account_id || instanciaWhatsAppDb.instagram_meta?.meta_instagram_account_id;
+
+    if (!token || !instaId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Access Token da Meta e Instagram Account ID são obrigatórios para o teste.'
+      });
+    }
+
+    try {
+      const resp = await fetch(`https://graph.facebook.com/v19.0/${encodeURIComponent(instaId)}?fields=id,username,name&access_token=${encodeURIComponent(token)}`);
+      if (resp.ok) {
+        const data = await resp.json();
+        if (instanciaWhatsAppDb.instagram_meta) {
+          instanciaWhatsAppDb.instagram_meta.webhook_status = 'conectado';
+          saveDbToDisk();
+        }
+        return res.json({ success: true, data });
+      } else {
+        const errData: any = await resp.json();
+        return res.status(resp.status).json({ success: false, error: errData.error?.message || 'Falha ao autenticar na Graph API da Meta' });
+      }
+    } catch (err: any) {
+      return res.status(502).json({ success: false, error: err.message });
+    }
+  });
+
+  // Webhook da Meta (Validação GET + Eventos POST)
+  app.get('/api/omnichannel/meta/webhook', (req, res) => {
+    const mode = req.query['hub.mode'];
+    const token = req.query['hub.verify_token'];
+    const challenge = req.query['hub.challenge'];
+    const expectedToken = instanciaWhatsAppDb.instagram_meta?.meta_verify_token || 'brasil_legal_meta_token_2026';
+
+    if (mode === 'subscribe' && token === expectedToken) {
+      console.log('[Meta Webhook] Verificado com sucesso pelo Meta Developer Portal');
+      return res.status(200).send(challenge);
+    }
+    return res.status(403).send('Token de verificação inválido');
+  });
+
+  app.post('/api/omnichannel/meta/webhook', (req, res) => {
+    try {
+      const body = req.body;
+      if (body.object === 'instagram' || body.object === 'page') {
+        for (const entry of body.entry || []) {
+          for (const messaging of entry.messaging || []) {
+            if (messaging.message && !messaging.message.is_echo) {
+              const senderId = messaging.sender?.id || 'lead_instagram';
+              const text = messaging.message.text || 'Mídia recebida';
+              
+              let chat = conversasWhatsAppDb.find(c => c.cliente_numero === `@${senderId}` || c.cliente_numero === senderId);
+              if (!chat) {
+                chat = {
+                  id: `chat-insta-${Date.now()}`,
+                  canal: 'Instagram',
+                  canal_origem_detalhe: 'Instagram Direct (@brasillegaloficial)',
+                  cliente_nome: `Lead Instagram (${senderId.substring(0, 6)})`,
+                  cliente_numero: `@user_${senderId.substring(0, 6)}`,
+                  cliente_cidade_uf: 'São Paulo / SP',
+                  foto_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+                  fila: 'Triagem Comercial (SDR)',
+                  status: 'Aguardando',
+                  ultima_mensagem: text,
+                  ultima_mensagem_hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                  mensagens_nao_lidas: 1,
+                  tags: ['Instagram Direct', 'Pré-qualificação'],
+                  ia_agente_ativo: true,
+                  mensagens: []
+                };
+                conversasWhatsAppDb.unshift(chat);
+              }
+
+              chat.mensagens.push({
+                id: `msg-in-${Date.now()}`,
+                remetente: 'cliente',
+                autor_nome: chat.cliente_nome,
+                conteudo: text,
+                timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                status: 'entregue',
+                tipo: 'texto'
+              });
+              chat.ultima_mensagem = text;
+              chat.ultima_mensagem_hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+              chat.mensagens_nao_lidas += 1;
+              saveDbToDisk();
+            }
+          }
+        }
+      }
+      res.status(200).send('EVENT_RECEIVED');
+    } catch (err: any) {
+      console.error('[Meta Webhook Error]', err);
+      res.sendStatus(500);
+    }
+  });
+
+  // Webhook da Evolution API
+  app.post('/api/omnichannel/evolution/webhook', (req, res) => {
+    try {
+      const { event, data } = req.body;
+      if (event === 'CONNECTION_UPDATE' || event === 'connection.update') {
+        const state = data?.state || data?.status;
+        if (state === 'open') {
+          instanciaWhatsAppDb.status = 'Conectado';
+          instanciaWhatsAppDb.qr_code_base64 = undefined;
+        } else if (state === 'close') {
+          instanciaWhatsAppDb.status = 'Desconectado';
+        }
+        saveDbToDisk();
+      } else if (event === 'QRCODE_UPDATED' || event === 'qrcode.updated') {
+        const qrcode = data?.qrcode?.base64 || data?.base64;
+        if (qrcode) {
+          instanciaWhatsAppDb.qr_code_base64 = qrcode.startsWith('data:image') ? qrcode : `data:image/png;base64,${qrcode}`;
+          instanciaWhatsAppDb.status = 'Aguardando_QR';
+          saveDbToDisk();
+        }
+      } else if (event === 'MESSAGES_UPSERT' || event === 'messages.upsert') {
+        const msgObj = data?.messages?.[0] || data;
+        if (msgObj && !msgObj.key?.fromMe) {
+          const remoteJid = msgObj.key?.remoteJid || '';
+          const cleanPhone = remoteJid.replace(/@.*$/, '');
+          const text = msgObj.message?.conversation || msgObj.message?.extendedTextMessage?.text || 'Mensagem recebida';
+          const pushName = msgObj.pushName || `Cliente WhatsApp (${cleanPhone.slice(-4)})`;
+
+          let chat = conversasWhatsAppDb.find(c => c.cliente_numero.replace(/\D/g, '') === cleanPhone.replace(/\D/g, ''));
+          if (!chat) {
+            chat = {
+              id: `chat-wapp-${Date.now()}`,
+              canal: 'WhatsApp',
+              canal_origem_detalhe: 'WhatsApp Evolution API',
+              cliente_nome: pushName,
+              cliente_numero: `+${cleanPhone}`,
+              cliente_cidade_uf: 'São Paulo / SP',
+              foto_url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
+              fila: 'Triagem Comercial (SDR)',
+              status: 'Aguardando',
+              ultima_mensagem: text,
+              ultima_mensagem_hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+              mensagens_nao_lidas: 1,
+              tags: ['WhatsApp Evolution', 'Pré-qualificação'],
+              ia_agente_ativo: true,
+              mensagens: []
+            };
+            conversasWhatsAppDb.unshift(chat);
+          }
+
+          chat.mensagens.push({
+            id: `msg-ev-${Date.now()}`,
+            remetente: 'cliente',
+            autor_nome: chat.cliente_nome,
+            conteudo: text,
+            timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+            status: 'entregue',
+            tipo: 'texto'
+          });
+          chat.ultima_mensagem = text;
+          chat.ultima_mensagem_hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          saveDbToDisk();
+        }
+      }
+      res.status(200).json({ status: 'ok' });
+    } catch (err: any) {
+      console.error('[Evolution Webhook Error]', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Simular Mensagem do Instagram Direct para testes práticos de automação
+  app.post('/api/omnichannel/instagram/simulate-incoming', (req, res) => {
+    const {
+      usuario = '@marcelo_imoveis',
+      nome = 'Marcelo Nogueira',
+      mensagem = 'Olá! Vi o anúncio de usucapião no Instagram. Como funciona para regularizar um terreno de posse sem escritura?',
+      cidade = 'Sorocaba / SP'
+    } = req.body;
+
+    const newChat: ConversaWhatsApp = {
+      id: `chat-insta-${Date.now()}`,
+      canal: 'Instagram',
+      canal_origem_detalhe: 'Instagram Direct (@brasillegaloficial) • Anúncio Meta Ads',
+      cliente_nome: nome,
+      cliente_numero: usuario,
+      cliente_cidade_uf: cidade,
+      foto_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+      fila: 'Triagem Comercial (SDR)',
+      status: 'Aguardando',
+      ultima_mensagem: mensagem,
+      ultima_mensagem_hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      mensagens_nao_lidas: 1,
+      tags: ['Instagram Direct', 'Meta Ads', 'Pré-qualificação'],
+      ia_agente_ativo: true,
+      mensagens: [
+        {
+          id: `msg-sim-${Date.now()}`,
+          remetente: 'cliente',
+          autor_nome: nome,
+          conteudo: mensagem,
+          timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          status: 'entregue',
+          tipo: 'texto'
+        }
+      ]
+    };
+
+    const configInsta = instanciaWhatsAppDb.instagram_meta;
+    if (configInsta?.automacoes?.resposta_boas_vindas) {
+      const saudacao = configInsta.automacoes.mensagem_boas_vindas || 'Olá! Obrigado por entrar em contato no Instagram da Brasil Legal.';
+      newChat.mensagens.push({
+        id: `msg-auto-${Date.now() + 1}`,
+        remetente: 'ia_agente',
+        autor_nome: 'Automação Brasil Legal (Direct)',
+        conteudo: `${saudacao}\n\nNossa equipe especialista atua diretamente em cartório para regularizar posse sem escritura por Usucapião Extrajudicial ou Adjudicação. Há quantos anos você exerce a posse deste terreno?`,
+        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        status: 'lida',
+        tipo: 'texto'
+      });
+      newChat.ultima_mensagem = 'Automação de boas-vindas enviada no Direct';
+    }
+
+    conversasWhatsAppDb.unshift(newChat);
+    saveDbToDisk();
+    res.status(201).json({ success: true, conversa: newChat });
+  });
+
   // Properties / Ativos Imobiliários
   app.get('/api/properties', (req, res) => {
     const { contact_id, deal_id } = req.query;

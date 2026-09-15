@@ -903,13 +903,48 @@ export interface IaQualificacaoImovel {
   gerou_lead_crm: boolean;
 }
 
-export type CanalAtendimento = 'WhatsApp' | 'Webchat' | 'Email';
+export type CanalAtendimento = 'WhatsApp' | 'Instagram' | 'Webchat' | 'Email';
 
 export type TomDeVozIa =
   | 'Consultivo & Técnico Especialista'
   | 'Formal & Jurídico Registral'
   | 'Ágil, Comercial & Direto'
   | 'Empático, Didático & Acolhedor';
+
+export type ProvedorWhatsApp = 'evolution' | 'zapi' | 'meta_cloud' | 'simulado';
+
+export interface ConfigConexaoWhatsApp {
+  provedor: ProvedorWhatsApp;
+  // Evolution API
+  evolution_api_url?: string;
+  evolution_api_key?: string;
+  evolution_instance_name?: string;
+  // Z-API
+  zapi_instance_id?: string;
+  zapi_token?: string;
+  zapi_client_token?: string;
+  // WhatsApp Cloud API Oficial (Meta)
+  meta_whatsapp_phone_number_id?: string;
+  meta_whatsapp_waba_id?: string;
+  meta_whatsapp_access_token?: string;
+}
+
+export interface ConfigConexaoInstagramMeta {
+  ativo: boolean;
+  meta_app_id?: string;
+  meta_page_id?: string;
+  meta_instagram_account_id?: string;
+  meta_access_token?: string;
+  meta_verify_token?: string;
+  webhook_status?: 'conectado' | 'pendente' | 'erro';
+  automacoes?: {
+    resposta_boas_vindas?: boolean;
+    mensagem_boas_vindas?: string;
+    qualificacao_ia?: boolean;
+    gatilho_palavras_chave?: string[];
+    encaminhar_sdr?: boolean;
+  };
+}
 
 export interface DiretrizCanalIa {
   canal: CanalAtendimento;
@@ -978,6 +1013,8 @@ export interface InstanciaWhatsAppConfig {
   auto_resposta_ia: boolean;
   mensagem_saudacao: string;
   filas_habilitadas: FilaAtendimentoWhatsApp[];
+  conexao?: ConfigConexaoWhatsApp;
+  instagram_meta?: ConfigConexaoInstagramMeta;
 }
 
 // ==========================================

@@ -1621,7 +1621,7 @@ export const initialOmnichannelConfig: OmnichannelConfig = {
   canais: {
     WhatsApp: {
       canal: 'WhatsApp',
-      nome_canal: 'WhatsApp Business Cloud API / QR',
+      nome_canal: 'WhatsApp Evolution / Z-API / Cloud API',
       ativo: true,
       status_conexao: 'Conectado',
       identificador: '+55 11 99864-2424',
@@ -1631,6 +1631,19 @@ export const initialOmnichannelConfig: OmnichannelConfig = {
       auto_resposta_ativa: true,
       encaminhar_apos_qualificacao: true,
       score_minimo_transbordo: 75
+    },
+    Instagram: {
+      canal: 'Instagram',
+      nome_canal: 'Instagram Direct (Meta Graph API)',
+      ativo: true,
+      status_conexao: 'Conectado',
+      identificador: '@brasillegaloficial',
+      tom_de_voz: 'Ágil, Comercial & Direto',
+      diretrizes_prompt: 'Atendimento via Instagram Direct para seguidores e leads de anúncios do Meta Ads. Seja dinâmico, acolhedor e ágil. Identifique rapidamente a dor do imóvel (posse sem escritura, loteamento irregular, inventário ou usucapião) e solicite o WhatsApp para envio gratuito do laudo preliminar.',
+      mensagem_saudacao: 'Olá! Que bom ter você aqui no Direct da Brasil Legal. 🏡 Você tem algum imóvel com documentação pendente ou contrato de gaveta que gostaria de regularizar?',
+      auto_resposta_ativa: true,
+      encaminhar_apos_qualificacao: true,
+      score_minimo_transbordo: 70
     },
     Webchat: {
       canal: 'Webchat',
@@ -1670,7 +1683,7 @@ export const initialInstanciaWhatsApp: InstanciaWhatsAppConfig = {
   numero_vinculado: '+55 11 99864-2424',
   status: 'Conectado',
   bateria_percentual: 96,
-  webhook_url: 'https://brasillegalimoveis.com.br/api/whatsapp/webhook',
+  webhook_url: 'https://brasillegalimoveis.com.br/api/omnichannel/evolution/webhook',
   auto_resposta_ia: true,
   mensagem_saudacao: 'Olá! Bem-vindo à Brasil Legal Regularização Imobiliária. Nosso assistente inteligente vai fazer algumas perguntas rápidas para checar a viabilidade do seu imóvel e transferir você ao nosso especialista.',
   filas_habilitadas: [
@@ -1678,7 +1691,33 @@ export const initialInstanciaWhatsApp: InstanciaWhatsAppConfig = {
     'Jurídico & Regularização',
     'Engenharia & Topografia',
     'Financeiro & Boletos'
-  ]
+  ],
+  conexao: {
+    provedor: 'evolution',
+    evolution_api_url: 'https://api.evolution-api.com',
+    evolution_api_key: '',
+    evolution_instance_name: 'brasillegal-central',
+    zapi_instance_id: '',
+    zapi_token: '',
+    meta_whatsapp_phone_number_id: '',
+    meta_whatsapp_access_token: ''
+  },
+  instagram_meta: {
+    ativo: true,
+    meta_app_id: '',
+    meta_page_id: '',
+    meta_instagram_account_id: 'brasillegaloficial',
+    meta_access_token: '',
+    meta_verify_token: 'brasil_legal_meta_token_2026',
+    webhook_status: 'conectado',
+    automacoes: {
+      resposta_boas_vindas: true,
+      mensagem_boas_vindas: 'Olá! Obrigado por enviar mensagem no Direct da Brasil Legal. Como podemos ajudar na regularização do seu imóvel hoje?',
+      qualificacao_ia: true,
+      gatilho_palavras_chave: ['regularizar', 'escritura', 'usucapião', 'posse', 'preço', 'orçamento'],
+      encaminhar_sdr: true
+    }
+  }
 };
 
 export const initialConversasWhatsApp: ConversaWhatsApp[] = [
@@ -2030,6 +2069,63 @@ export const initialConversasWhatsApp: ConversaWhatsApp[] = [
         autor_nome: 'Solange Silveira',
         conteudo: 'Olá, bom dia! Tenho uma casa em Santos que herdei do meu pai, mas ele comprou por recibo em 1998. Gostaria de saber se consigo colocar no meu nome.',
         timestamp: '11:40',
+        status: 'entregue',
+        tipo: 'texto'
+      }
+    ]
+  },
+  {
+    id: 'chat-06',
+    canal: 'Instagram',
+    canal_origem_detalhe: 'Instagram Direct (@brasillegaloficial) • Anúncio Meta Ads',
+    cliente_nome: 'Dra. Camila Araújo',
+    cliente_numero: '@camila_araujo_adv',
+    cliente_cidade_uf: 'São Paulo / SP',
+    foto_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    fila: 'Triagem Comercial (SDR)',
+    status: 'Em_Atendimento',
+    atendente_id: 'usr-sdr-1',
+    atendente_nome: 'Lucas Sales (SDR)',
+    ultima_mensagem: 'Vi o anúncio de vocês no Reels sobre regularização de herança sem escritura. Tenho 2 clientes precisando urgente!',
+    ultima_mensagem_hora: '11:55',
+    mensagens_nao_lidas: 1,
+    tags: ['Instagram Direct', 'Meta Ads', 'Parceria Jurídica', 'Pré-qualificação'],
+    ia_agente_ativo: true,
+    ia_qualificacao: {
+      etapa_atual: 2,
+      concluida: false,
+      tem_escritura_ou_posse: 'Cessão Hereditária',
+      tempo_posse_anos: '15 anos',
+      score_viabilidade_percentual: 88,
+      servico_sugerido: 'Inventário Extrajudicial cumulado com Adjudicação / Usucapião',
+      parecer_resumo: 'Lead de alto valor originada do Instagram Direct. Advogada buscando parceria para regularização registral em cartório.',
+      gerou_lead_crm: true
+    },
+    mensagens: [
+      {
+        id: 'msg-601',
+        remetente: 'cliente',
+        autor_nome: 'Dra. Camila Araújo',
+        conteudo: 'Olá! Vi o anúncio de vocês no Reels sobre regularização de herança e posse sem escritura. Tenho 2 clientes precisando urgente no meu escritório.',
+        timestamp: '11:52',
+        status: 'lida',
+        tipo: 'texto'
+      },
+      {
+        id: 'msg-602',
+        remetente: 'ia_agente',
+        autor_nome: 'Agente IA Brasil Legal (Instagram Direct)',
+        conteudo: 'Olá Dra. Camila! 🏡 Que excelente contato. Na Brasil Legal atuamos em parceria direta com advogados para acelerar a parte técnica, topográfica e notarial em cartório sem morosidade judicial.\n\nQual a situação documental principal desses imóveis: posse mansa com contrato de gaveta, loteamento clandestino ou herdeiros sem inventário?',
+        timestamp: '11:53',
+        status: 'lida',
+        tipo: 'texto'
+      },
+      {
+        id: 'msg-603',
+        remetente: 'cliente',
+        autor_nome: 'Dra. Camila Araújo',
+        conteudo: 'Um é posse mansa com contrato de gaveta de 15 anos e o outro é herdeiros que não conseguiram terminar o inventário porque a casa não está averbada no registro.',
+        timestamp: '11:55',
         status: 'entregue',
         tipo: 'texto'
       }
