@@ -345,6 +345,18 @@ export interface SiteSettings {
   blog_titulo?: string;
   blog_subtitulo?: string;
   artigos_blog?: ArtigoBlog[];
+  // Pop-up Promocional / Campanha de Desconto com Cronômetro
+  popup_promo_ativo?: boolean;
+  popup_promo_titulo?: string;
+  popup_promo_subtitulo?: string;
+  popup_promo_tag_desconto?: string; // ex: "20% OFF EXCLUSIVO"
+  popup_promo_cupom?: string; // ex: "REGULARIZA20"
+  popup_promo_minutos_cronometro?: number; // ex: 15
+  popup_promo_segundos_delay?: number; // ex: 6
+  popup_promo_texto_botao?: string; // ex: "Resgatar Desconto no WhatsApp"
+  popup_promo_texto_rodape?: string;
+  popup_promo_mensagem_whatsapp?: string;
+  popup_promo_imagem_url?: string;
 }
 
 export interface ArtigoBlog {

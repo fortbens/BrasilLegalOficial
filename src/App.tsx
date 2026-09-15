@@ -767,20 +767,8 @@ export default function App() {
         }
       } else if (hash === '#login' || search.includes('view=login')) {
         setViewMode('login');
-      } else if (
-        hash === '#site' || 
-        hash.startsWith('#site') || 
-        search.includes('view=site') ||
-        hash.startsWith('#diagnostico') || 
-        hash.startsWith('#servicos') || 
-        hash.startsWith('#quem-somos') || 
-        hash.startsWith('#video') || 
-        hash.startsWith('#depoimentos') || 
-        hash.startsWith('#indique-e-ganhe') || 
-        hash.startsWith('#faq') || 
-        hash.startsWith('#blog') || 
-        hash.startsWith('#area-cliente')
-      ) {
+      } else {
+        // Padrão para qualquer âncora (#raio-x, #casos-reais, etc.) ou retorno para URL raiz (hash vazio):
         setViewMode('site');
       }
     };

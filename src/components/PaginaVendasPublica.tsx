@@ -10,6 +10,7 @@ import { SecaoDiferenciaisValorizacao } from './SecaoDiferenciaisValorizacao';
 import { SecaoCasosReais } from './SecaoCasosReais';
 import { SecaoGaleriaVideos } from './SecaoGaleriaVideos';
 import { RedesSociaisLinks } from './RedesSociaisLinks';
+import { ModalPopupPromocional } from './ModalPopupPromocional';
 import { 
   Shield, 
   CheckCircle2, 
@@ -230,6 +231,32 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
     if (onNovoLead) {
       onNovoLead(leadData);
     }
+  };
+
+  // Pop-up Promocional / Campanha de Desconto com Cronômetro
+  const [isPopupPromoOpen, setIsPopupPromoOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!siteSettings.popup_promo_ativo) return;
+
+    // Se o visitante já fechou o pop-up nesta sessão, respeita a decisão
+    const jaFechou = sessionStorage.getItem('brasil_legal_popup_promo_dismissed');
+    if (jaFechou) return;
+
+    const delayMs = Math.max(2, (siteSettings.popup_promo_segundos_delay ?? 6)) * 1000;
+    const timer = setTimeout(() => {
+      setIsPopupPromoOpen(true);
+    }, delayMs);
+
+    return () => clearTimeout(timer);
+  }, [siteSettings.popup_promo_ativo, siteSettings.popup_promo_segundos_delay]);
+
+  const handleClosePopupPromo = () => {
+    setIsPopupPromoOpen(false);
+    try {
+      sessionStorage.setItem('brasil_legal_popup_promo_dismissed', 'true');
+    } catch (e) {}
   };
 
   const corPrimaria = siteSettings.paleta_cores?.primaria || appSettings.cor_primaria || '#2E3192';
@@ -1000,15 +1027,6 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
             <p className="text-xs sm:text-sm text-slate-300">
               Faça um diagnóstico inteligente em 7 etapas rápidas e descubra a rota exata para obter a escritura definitiva do seu imóvel.
             </p>
-            <div className="pt-1">
-              <a
-                href="#raio-x-form"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs shadow-lg transition-all"
-              >
-                <span>Clicar para avançar</span>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-950" />
-              </a>
-            </div>
           </div>
           <RaioXImovel 
             id="raio-x-form"
@@ -2283,6 +2301,14 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
           </div>
         </div>
       )}
+
+      {/* Modal Pop-up Promocional / Campanha de Desconto com Cronômetro */}
+      <ModalPopupPromocional
+        settings={siteSettings}
+        whatsappNumero={whatsappNumber}
+        isOpen={isPopupPromoOpen}
+        onClose={handleClosePopupPromo}
+      />
     </div>
   );
 };

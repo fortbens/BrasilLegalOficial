@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   CheckCircle2, 
   ArrowRight, 
@@ -65,6 +65,30 @@ export const RaioXImovel: React.FC<RaioXImovelProps> = ({
   const [erroValidacao, setErroValidacao] = useState<string>('');
   const [concluido, setConcluido] = useState<boolean>(false);
   const [isEnviando, setIsEnviando] = useState<boolean>(false);
+
+  // Sincronização com o botão Voltar do navegador para não sair da página
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    if (etapa > 1 && !concluido) {
+      window.history.pushState({ raioXEtapa: etapa }, '', window.location.href);
+    }
+
+    const handlePopState = () => {
+      setEtapa((prev) => {
+        if (prev > 1) {
+          setErroValidacao('');
+          return prev - 1;
+        }
+        return 1;
+      });
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [etapa, concluido]);
 
   const opcoesProblema = [
     { 
@@ -878,14 +902,17 @@ Gostaria de receber a análise com um especialista.`
                     <div />
                   )}
 
-                  <button
-                    type="button"
-                    onClick={handleProximaEtapa}
-                    className="px-6 py-2.5 rounded-xl bg-[#2E3192] hover:bg-[#1C1E63] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer ml-auto"
-                  >
-                    <span>Clicar para avançar</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
+                  {/* Mostra botão de avançar apenas nas etapas que exigem digitação de dados (3, 5 e 6) */}
+                  {[3, 5, 6].includes(etapa) && (
+                    <button
+                      type="button"
+                      onClick={handleProximaEtapa}
+                      className="px-6 py-2.5 rounded-xl bg-[#2E3192] hover:bg-[#1C1E63] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer ml-auto"
+                    >
+                      <span>Avançar</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
               )}
             </div>

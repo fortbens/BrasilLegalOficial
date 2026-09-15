@@ -775,7 +775,19 @@ Ao final, a escritura pública é lavrada em poucos dias e encaminhada aos Cart�
       destaque: true,
       ativo: true
     }
-  ]
+  ],
+  // Pop-up Promocional / Campanha de Desconto com Cronômetro
+  popup_promo_ativo: false,
+  popup_promo_titulo: 'Condição Especial de Plantão Notarial',
+  popup_promo_subtitulo: 'Garanta até 20% de desconto nos honorários de regularização para requerimentos iniciados hoje!',
+  popup_promo_tag_desconto: '20% OFF EXCLUSIVO',
+  popup_promo_cupom: 'REGULARIZA20',
+  popup_promo_minutos_cronometro: 15,
+  popup_promo_segundos_delay: 6,
+  popup_promo_texto_botao: 'Resgatar Desconto no WhatsApp',
+  popup_promo_texto_rodape: 'Condição especial por tempo limitado ao encerramento do cronômetro oficial.',
+  popup_promo_mensagem_whatsapp: 'Olá! Vi o pop-up com o cupom REGULARIZA20 e quero solicitar a condição especial com 20% de desconto nos honorários.',
+  popup_promo_imagem_url: ''
 };
 
 export const initialServicosCatalogo: ServicoCatalogo[] = initialSiteSettings.servicos_catalogo;

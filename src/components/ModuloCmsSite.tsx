@@ -47,9 +47,13 @@ import {
   GitBranch,
   Share2,
   Briefcase,
-  Film
+  Film,
+  Flame,
+  Clock,
+  Tag
 } from 'lucide-react';
 import { getEmbedVideoUrl } from '../utils/videoHelper';
+import { ModalPopupPromocional } from './ModalPopupPromocional';
 
 interface ModuloCmsSiteProps {
   settings: SiteSettings;
@@ -67,8 +71,9 @@ export const ModuloCmsSite: React.FC<ModuloCmsSiteProps> = ({
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [previewTab, setPreviewTab] = useState<'preview' | 'editor'>('preview');
   const [viewportMode, setViewportMode] = useState<'desktop' | 'mobile'>('desktop');
-  const [editorSection, setEditorSection] = useState<'geral' | 'topo' | 'midia' | 'video' | 'equipe' | 'depoimentos' | 'servicos' | 'casos_reais' | 'galeria_videos' | 'redes_sociais' | 'blog' | 'area_cliente' | 'servidor' | 'github_cpanel' | 'rodape' | 'css'>('geral');
+  const [editorSection, setEditorSection] = useState<'geral' | 'topo' | 'midia' | 'video' | 'equipe' | 'depoimentos' | 'servicos' | 'casos_reais' | 'galeria_videos' | 'redes_sociais' | 'blog' | 'area_cliente' | 'servidor' | 'github_cpanel' | 'popup_promo' | 'rodape' | 'css'>('geral');
   const [isPreviewAreaClienteOpen, setIsPreviewAreaClienteOpen] = useState(false);
+  const [isPreviewPopupOpen, setIsPreviewPopupOpen] = useState(false);
   const [copiedUrlType, setCopiedUrlType] = useState<string | null>(null);
 
   // Sync formData whenever settings update from database
@@ -600,6 +605,24 @@ export const ModuloCmsSite: React.FC<ModuloCmsSiteProps> = ({
             >
               <Layout className="w-3.5 h-3.5 text-blue-400" />
               Rodapé & Dados Legais
+            </button>
+            <button
+              type="button"
+              id="cms-tab-popup-promo"
+              onClick={() => setEditorSection('popup_promo')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                editorSection === 'popup_promo'
+                  ? 'bg-[#2E3192] text-white shadow-xs border border-amber-300'
+                  : 'bg-gradient-to-r from-amber-50 to-orange-50 text-amber-900 hover:from-amber-100 hover:to-orange-100 border border-amber-300'
+              }`}
+            >
+              <Flame className="w-3.5 h-3.5 text-amber-600" />
+              <span>Pop-up de Desconto & Cronômetro</span>
+              {formData.popup_promo_ativo ? (
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Pop-up Ativo no Site" />
+              ) : (
+                <span className="text-[10px] text-slate-400 font-normal">(Off)</span>
+              )}
             </button>
             <button
               type="button"
@@ -2554,6 +2577,281 @@ RewriteRule ^(.*)$ https://ais-pre-j6ex53jyuleo5ocs7ysosv-858092762556.us-east1.
               </div>
             )}
 
+            {/* SECTION: POP-UP PROMOCIONAL & CAMPANHAS DE DESCONTO COM CRONÔMETRO */}
+            {editorSection === 'popup_promo' && (
+              <div className="space-y-6 animate-in fade-in duration-200">
+                {/* Header & Quick Action */}
+                <div className="bg-gradient-to-r from-slate-900 to-[#1C1E63] text-white p-6 rounded-2xl shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-amber-400/30">
+                  <div className="space-y-1.5">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-bold uppercase tracking-wider">
+                      <Flame className="w-3.5 h-3.5 text-amber-400" />
+                      Campanhas de Alta Conversão
+                    </div>
+                    <h3 className="text-xl font-black tracking-tight font-display text-white">
+                      Pop-up de Desconto com Relógio Cronômetro
+                    </h3>
+                    <p className="text-xs text-slate-300 max-w-2xl">
+                      Crie promoções por tempo limitado para plantões de cartório, regularizações coletivas e descontos em honorários com contagem regressiva ao vivo que impulsionam o contato imediato no WhatsApp.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setIsPreviewPopupOpen(true)}
+                      className="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold flex items-center gap-2 shadow-lg transition-all cursor-pointer"
+                    >
+                      <Eye className="w-4 h-4" />
+                      <span>Testar Pop-up na Tela</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Coluna 1 & 2: Controles & Textos da Campanha */}
+                  <div className="lg:col-span-2 space-y-6">
+                    {/* Status & Gatilhos */}
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-[#2E3192]" />
+                        Ativação & Tempo de Exibição
+                      </h4>
+
+                      {/* Switch de Ativação Geral */}
+                      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <label className="text-sm font-bold text-slate-900 flex items-center gap-2 cursor-pointer">
+                            Ativar Pop-up Promocional no Site
+                            {formData.popup_promo_ativo && (
+                              <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                Ativo no Site
+                              </span>
+                            )}
+                          </label>
+                          <p className="text-xs text-slate-500">
+                            Quando ativado, os visitantes verão a janela promocional automaticamente após o tempo de espera configurado.
+                          </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.popup_promo_ativo || false}
+                            onChange={(e) => setFormData({ ...formData, popup_promo_ativo: e.target.checked })}
+                            className="sr-only peer"
+                          />
+                          <div className="w-11 h-6 bg-slate-300 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2E3192]" />
+                        </label>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Tempo de espera antes de abrir (segundos)
+                          </label>
+                          <input
+                            type="number"
+                            min="2"
+                            max="120"
+                            value={formData.popup_promo_segundos_delay ?? 6}
+                            onChange={(e) => setFormData({ ...formData, popup_promo_segundos_delay: Number(e.target.value) })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:ring-2 focus:ring-[#2E3192] outline-hidden"
+                          />
+                          <span className="text-[11px] text-slate-400 mt-1 block">
+                            Recomendado: 5 a 8 segundos para não interromper logo no primeiro clique.
+                          </span>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Duração no Cronômetro (minutos)
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="180"
+                            value={formData.popup_promo_minutos_cronometro ?? 15}
+                            onChange={(e) => setFormData({ ...formData, popup_promo_minutos_cronometro: Number(e.target.value) })}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:ring-2 focus:ring-[#2E3192] outline-hidden"
+                          />
+                          <span className="text-[11px] text-slate-400 mt-1 block">
+                            Tempo visível no cronômetro digital regressivo (ex: 15 min).
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Dados da Oferta & Cupom */}
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <Tag className="w-4 h-4 text-amber-500" />
+                        Textos da Campanha & Cupom de Desconto
+                      </h4>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Tag de Destaque / Selo
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.popup_promo_tag_desconto || ''}
+                            onChange={(e) => setFormData({ ...formData, popup_promo_tag_desconto: e.target.value })}
+                            placeholder="Ex: 20% OFF EXCLUSIVO"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:ring-2 focus:ring-[#2E3192] outline-hidden"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Código do Cupom de Desconto
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.popup_promo_cupom || ''}
+                            onChange={(e) => setFormData({ ...formData, popup_promo_cupom: e.target.value.toUpperCase() })}
+                            placeholder="Ex: REGULARIZA20"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-mono font-bold text-slate-900 focus:ring-2 focus:ring-[#2E3192] outline-hidden"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          Título Principal da Janela
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.popup_promo_titulo || ''}
+                          onChange={(e) => setFormData({ ...formData, popup_promo_titulo: e.target.value })}
+                          placeholder="Ex: Condição Especial de Plantão Notarial"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:ring-2 focus:ring-[#2E3192] outline-hidden"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          Subtítulo / Explicação da Vantagem
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={formData.popup_promo_subtitulo || ''}
+                          onChange={(e) => setFormData({ ...formData, popup_promo_subtitulo: e.target.value })}
+                          placeholder="Ex: Garanta até 20% de desconto nos honorários de regularização para requerimentos iniciados hoje!"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:ring-2 focus:ring-[#2E3192] outline-hidden"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Texto do Botão de Ação (CTA)
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.popup_promo_texto_botao || ''}
+                            onChange={(e) => setFormData({ ...formData, popup_promo_texto_botao: e.target.value })}
+                            placeholder="Ex: Resgatar Desconto no WhatsApp"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:ring-2 focus:ring-[#2E3192] outline-hidden"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">
+                            Texto de Rodapé / Validade
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.popup_promo_texto_rodape || ''}
+                            onChange={(e) => setFormData({ ...formData, popup_promo_texto_rodape: e.target.value })}
+                            placeholder="Ex: Condição especial por tempo limitado ao encerramento do cronômetro."
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:ring-2 focus:ring-[#2E3192] outline-hidden"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          Mensagem Pré-configurada que o Cliente Enviará no WhatsApp
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={formData.popup_promo_mensagem_whatsapp || ''}
+                          onChange={(e) => setFormData({ ...formData, popup_promo_mensagem_whatsapp: e.target.value })}
+                          placeholder="Ex: Olá! Vi o pop-up com o cupom REGULARIZA20 e quero solicitar a condição especial com desconto."
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 focus:ring-2 focus:ring-[#2E3192] outline-hidden"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Coluna 3: Prévia Compacta da Campanha */}
+                  <div className="space-y-4">
+                    <div className="bg-slate-900 text-white p-5 rounded-2xl border border-amber-400/30 shadow-xl space-y-4 sticky top-6">
+                      <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                        <span className="text-[10px] uppercase font-bold tracking-wider text-amber-300">
+                          Prévia da Campanha
+                        </span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${formData.popup_promo_ativo ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-slate-800 text-slate-400'}`}>
+                          {formData.popup_promo_ativo ? 'Ativo no Site' : 'Desativado'}
+                        </span>
+                      </div>
+
+                      <div>
+                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-bold uppercase mb-2">
+                          <Flame className="w-3 h-3 text-amber-400" />
+                          <span>{formData.popup_promo_tag_desconto || 'CONDIÇÃO ESPECIAL'}</span>
+                        </div>
+                        <h5 className="text-base font-black text-white leading-tight">
+                          {formData.popup_promo_titulo || 'Título da Campanha'}
+                        </h5>
+                        <p className="text-xs text-slate-300 mt-1 line-clamp-2">
+                          {formData.popup_promo_subtitulo || 'Descrição da campanha e desconto oferecido.'}
+                        </p>
+                      </div>
+
+                      {/* Mini cronômetro preview */}
+                      <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center gap-2">
+                        <div className="text-center">
+                          <div className="text-lg font-mono font-black text-amber-300">
+                            {String(formData.popup_promo_minutos_cronometro || 15).padStart(2, '0')}
+                          </div>
+                          <div className="text-[9px] text-slate-400 uppercase">Min</div>
+                        </div>
+                        <span className="text-amber-400 font-bold">:</span>
+                        <div className="text-center">
+                          <div className="text-lg font-mono font-black text-amber-300">00</div>
+                          <div className="text-[9px] text-slate-400 uppercase">Seg</div>
+                        </div>
+                      </div>
+
+                      {/* Mini Cupom preview */}
+                      <div className="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700 flex items-center justify-between text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-400 block">Cupom:</span>
+                          <span className="font-mono font-bold text-white tracking-wider">
+                            {formData.popup_promo_cupom || 'REGULARIZA20'}
+                          </span>
+                        </div>
+                        <span className="px-2 py-1 rounded bg-slate-700 text-[10px] font-bold text-slate-200">
+                          Copiar
+                        </span>
+                      </div>
+
+                      {/* CTA Button preview */}
+                      <button
+                        type="button"
+                        onClick={() => setIsPreviewPopupOpen(true)}
+                        className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer hover:brightness-110"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Abrir Teste do Pop-up</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* SECTION 6: CORES & CSS */}
             {editorSection === 'css' && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -3093,6 +3391,15 @@ RewriteRule ^(.*)$ https://ais-pre-j6ex53jyuleo5ocs7ysosv-858092762556.us-east1.
           </div>
         </div>
       )}
+
+      {/* Modal Preview: Pop-up Promocional com Cronômetro */}
+      <ModalPopupPromocional
+        settings={formData}
+        whatsappNumero={formData.whatsapp_vendas || '+55 11 99864-2424'}
+        isOpen={isPreviewPopupOpen}
+        onClose={() => setIsPreviewPopupOpen(false)}
+        isPreview={true}
+      />
     </div>
   );
 };
