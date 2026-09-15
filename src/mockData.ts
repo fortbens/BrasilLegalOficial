@@ -222,14 +222,14 @@ export const initialSiteSettings: SiteSettings = {
     secundaria: '#F2EC00',
     fundo: '#FFFFFF'
   },
-  secao_hero_titulo: 'Seu imóvel pode valer mais do que você imagina.',
+  secao_hero_titulo: 'Seu imóvel 100% legalizado com escrituração direto no cartório',
   secao_hero_subtitulo: 'Descubra o que está impedindo seu imóvel de estar regularizado, valorizado e pronto para vender, financiar ou transferir.',
   banner_hero_url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80',
   video_url: 'https://youtu.be/9uRifSbfweA?si=0UzSL42AuAF3IaGS',
   video_titulo: 'Como funciona a regularização extrajudicial em cartório',
   video_subtitulo: 'Entenda em 2 minutos como a Lei 13.465/17 e o Provimento 65 do CNJ permitem obter sua escritura registrada sem precisar ingressar com ação demorada na Justiça.',
   video_poster_url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80',
-  banner_alerta_titulo: 'Cuidado: imóvel sem escritura definitiva perde até 40% do valor de mercado',
+  banner_alerta_titulo: 'Cuidado: imóvel sem escritura definitiva perde até 50% do valor de mercado',
   banner_alerta_subtitulo: 'Imóveis irregulares não aceitam financiamento bancário pela Caixa, Bradesco ou Itaú, correm risco de penhora por dívidas de antigos donos e geram inventários litigiosos caros.',
   quem_somos_exibir: true,
   quem_somos_titulo: 'Autoridade técnica em advocacia registral e engenharia fundiária',
@@ -356,7 +356,7 @@ export const initialSiteSettings: SiteSettings = {
     {
       id: 'faq-5',
       pergunta: 'Posso vender um imóvel irregular?',
-      resposta: 'A venda pode até ocorrer por contrato de gaveta ou cessão de direitos, mas com perda severa de até 40% do valor comercial e exclusão total de compradores que dependem de financiamento bancário pela Caixa, Itaú, Bradesco ou Santander. A regularização prévia recupera a liquidez e o valor de mercado.'
+      resposta: 'A venda pode até ocorrer por contrato de gaveta ou cessão de direitos, mas com perda severa de até 50% do valor comercial e exclusão total de compradores que dependem de financiamento bancário pela Caixa, Itaú, Bradesco ou Santander. A regularização prévia recupera a liquidez e o valor de mercado.'
     },
     {
       id: 'faq-6',
@@ -524,10 +524,11 @@ export const initialSiteSettings: SiteSettings = {
   faixa_topo_link_texto: 'Falar com Especialista',
   // Personalização do Rodapé / Footer
   rodape_exibir: true,
+  rodape_exibir_cnpj: false,
   rodape_titulo: 'BRASIL LEGAL',
   rodape_tag: 'CARTÓRIOS & REGISTROS',
   rodape_razao_social: 'Brasil Legal Soluções Imobiliárias e Registrais Ltda',
-  rodape_cnpj: '00.000.000/0001-00',
+  rodape_cnpj: '',
   rodape_descricao: 'Assessoria especializada em regularização fundiária urbana e rural, usucapião extrajudicial e saneamento de matrículas em todo o território nacional.',
   rodape_telefone: '+55 11 99864-2424',
   rodape_email: 'atendimento@brasillegal.com.br',
@@ -559,7 +560,7 @@ export const initialSiteSettings: SiteSettings = {
       tags: ['Usucapião', 'Cartório de Imóveis', 'Provimento 65 CNJ', 'Escritura'],
       destaque: true,
       publicado: true,
-      conteudo: `Ter apenas o contrato de gaveta ou um recibo antigo de compra e venda coloca seu patrimônio em constante insegurança jurídica. Sem a matrícula atualizada no Cartório de Registro de Imóveis (CRI), o imóvel perde até 40% do seu valor comercial de mercado e você fica impedido de vendê-lo através de financiamento bancário pela Caixa, Bradesco, Itaú ou Santander.
+      conteudo: `Ter apenas o contrato de gaveta ou um recibo antigo de compra e venda coloca seu patrimônio em constante insegurança jurídica. Sem a matrícula atualizada no Cartório de Registro de Imóveis (CRI), o imóvel perde até 50% do seu valor comercial de mercado e você fica impedido de vendê-lo através de financiamento bancário pela Caixa, Bradesco, Itaú ou Santander.
 
 ### 1. A Revolução do Procedimento Extrajudicial
 Historicamente, qualquer regularização de posse exigia ajuizar uma Ação de Usucapião na Justiça Estadual, cujo tempo médio de tramitação variava entre 5 e 10 anos. Com o Código de Processo Civil de 2015 e a edição do **Provimento nº 65/2017 do Conselho Nacional de Justiça (CNJ)**, todo o trâmite passou a ser admitido diretamente perante o Oficial do Registro de Imóveis.

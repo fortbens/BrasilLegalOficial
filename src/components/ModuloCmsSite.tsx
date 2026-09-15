@@ -2765,13 +2765,25 @@ RewriteRule ^(.*)$ https://ais-pre-j6ex53jyuleo5ocs7ysosv-858092762556.us-east1.
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">CNPJ</label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-bold text-slate-700">CNPJ no Rodapé</label>
+                      <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-600">
+                        <input
+                          type="checkbox"
+                          checked={!!formData.rodape_exibir_cnpj}
+                          onChange={(e) => setFormData({ ...formData, rodape_exibir_cnpj: e.target.checked })}
+                          className="rounded text-[#2E3192] focus:ring-[#2E3192]"
+                        />
+                        <span className="font-semibold text-[11px] text-slate-700">Aparecer CNPJ</span>
+                      </label>
+                    </div>
                     <input
                       type="text"
+                      disabled={!formData.rodape_exibir_cnpj}
                       value={formData.rodape_cnpj || ''}
                       onChange={(e) => setFormData({ ...formData, rodape_cnpj: e.target.value })}
-                      placeholder="38.491.820/0001-55"
-                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-[#2E3192]"
+                      placeholder="Ex: 38.491.820/0001-55 (só aparece se marcar Aparecer CNPJ)"
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 font-mono focus:ring-2 focus:ring-[#2E3192] disabled:bg-slate-100 disabled:text-slate-400"
                     />
                   </div>
 
@@ -2890,7 +2902,8 @@ RewriteRule ^(.*)$ https://ais-pre-j6ex53jyuleo5ocs7ysosv-858092762556.us-east1.
                           rodape_titulo: 'BRASIL LEGAL',
                           rodape_tag: 'CARTÓRIOS & REGISTROS',
                           rodape_razao_social: 'Brasil Legal Soluções Imobiliárias e Registrais Ltda',
-                          rodape_cnpj: '00.000.000/0001-00',
+                          rodape_exibir_cnpj: false,
+                          rodape_cnpj: '',
                           rodape_descricao: 'Assessoria jurídica e técnica especializada em regularização fundiária urbana e rural, usucapião extrajudicial e saneamento de matrículas em todo o território nacional.',
                           rodape_telefone: '+55 11 98741-2099',
                           rodape_email: 'atendimento@brasillegal.com.br',
@@ -2920,9 +2933,11 @@ RewriteRule ^(.*)$ https://ais-pre-j6ex53jyuleo5ocs7ysosv-858092762556.us-east1.
                           </span>
                         )}
                       </div>
-                      <span className="text-[11px] text-slate-400 font-mono">
-                        CNPJ: {formData.rodape_cnpj || '38.491.820/0001-55'}
-                      </span>
+                      {formData.rodape_exibir_cnpj && formData.rodape_cnpj && !formData.rodape_cnpj.includes('00.000.000') && (
+                        <span className="text-[11px] text-slate-400 font-mono">
+                          CNPJ: {formData.rodape_cnpj}
+                        </span>
+                      )}
                     </div>
                     <p className="text-xs text-slate-300 font-medium">
                       {formData.rodape_razao_social || 'Brasil Legal Soluções Imobiliárias e Registrais Ltda'}

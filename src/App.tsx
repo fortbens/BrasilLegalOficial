@@ -236,6 +236,17 @@ export default function App() {
               return r;
             });
           }
+          if (!parsed.secao_hero_titulo || parsed.secao_hero_titulo === 'Seu imóvel pode valer mais do que você imagina.' || parsed.secao_hero_titulo.includes('escritura definitiva direto no cartório')) {
+            parsed.secao_hero_titulo = 'Seu imóvel 100% legalizado com escrituração direto no cartório';
+          }
+          if (!parsed.banner_alerta_titulo || parsed.banner_alerta_titulo.includes('40%')) {
+            parsed.banner_alerta_titulo = 'Cuidado: imóvel sem escritura definitiva perde até 50% do valor de mercado';
+            parsed.banner_alerta_subtitulo = 'Imóveis irregulares não aceitam financiamento bancário pela Caixa, Bradesco ou Itaú, correm risco de penhora por dívidas de antigos donos e geram inventários litigiosos caros.';
+          }
+          if (parsed.rodape_cnpj && parsed.rodape_cnpj.includes('00.000.000')) {
+            parsed.rodape_cnpj = '';
+            parsed.rodape_exibir_cnpj = false;
+          }
           return { ...initialSiteSettings, ...parsed };
         } catch (e) {}
       }
@@ -301,7 +312,7 @@ export default function App() {
 
   const handleDeleteAtividade = (id: string) => {
     setAtividades(prev => {
-      const next = prev.filter(a => a.id !== id);
+      const next = prev.filter(a => String(a.id) !== String(id));
       try {
         localStorage.setItem('brasil_legal_atividades', JSON.stringify(next));
       } catch (e) {}
@@ -503,6 +514,17 @@ export default function App() {
         }
         if (!s.whatsapp_vendas) {
           s.whatsapp_vendas = '+55 11 99864-2424';
+        }
+        if (!s.secao_hero_titulo || s.secao_hero_titulo === 'Seu imóvel pode valer mais do que você imagina.' || s.secao_hero_titulo.includes('escritura definitiva direto no cartório')) {
+          s.secao_hero_titulo = 'Seu imóvel 100% legalizado com escrituração direto no cartório';
+        }
+        if (!s.banner_alerta_titulo || s.banner_alerta_titulo.includes('40%')) {
+          s.banner_alerta_titulo = 'Cuidado: imóvel sem escritura definitiva perde até 50% do valor de mercado';
+          s.banner_alerta_subtitulo = 'Imóveis irregulares não aceitam financiamento bancário pela Caixa, Bradesco ou Itaú, correm risco de penhora por dívidas de antigos donos e geram inventários litigiosos caros.';
+        }
+        if (s.rodape_cnpj && s.rodape_cnpj.includes('00.000.000')) {
+          s.rodape_cnpj = '';
+          s.rodape_exibir_cnpj = false;
         }
         setSiteSettings(s);
         try {

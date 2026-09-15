@@ -377,61 +377,53 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
             </a>
           </div>
 
-          {/* Nav Links (Desktop) */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-[13px] font-medium text-slate-600 shrink-0">
+          {/* Nav Links (Desktop) - Moderno, Harmônico e Responsivo */}
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 text-[13px] font-medium text-slate-600 shrink-0">
             <a 
               href="#raio-x" 
-              className="px-2.5 py-1.5 rounded-lg font-semibold text-[#2E3192] hover:text-[#1C1E63] hover:bg-slate-100/80 transition-all shrink-0"
+              className="px-2.5 py-1.5 rounded-lg font-semibold text-[#2E3192] hover:text-[#1C1E63] hover:bg-indigo-50/70 transition-all shrink-0"
             >
               Raio-X
             </a>
             <a 
               href="#servicos" 
-              className="px-2.5 py-1.5 rounded-lg hover:text-[#2E3192] hover:bg-slate-100/80 transition-all shrink-0"
+              className="px-2.5 py-1.5 rounded-lg text-slate-700 hover:text-[#2E3192] hover:bg-slate-100/80 transition-all shrink-0"
             >
               Serviços
             </a>
             <a 
               href="#casos-reais" 
-              className="px-2.5 py-1.5 rounded-lg hover:text-[#2E3192] hover:bg-slate-100/80 transition-all shrink-0"
+              className="px-2.5 py-1.5 rounded-lg text-slate-700 hover:text-[#2E3192] hover:bg-slate-100/80 transition-all shrink-0"
             >
               Casos Reais
             </a>
             <a 
               href="#faq" 
-              className="px-2.5 py-1.5 rounded-lg hover:text-[#2E3192] hover:bg-slate-100/80 transition-all shrink-0"
+              className="px-2.5 py-1.5 rounded-lg text-slate-700 hover:text-[#2E3192] hover:bg-slate-100/80 transition-all shrink-0"
             >
               Dúvidas
             </a>
             <a 
               href="#galeria-videos" 
-              className="hidden xl:inline-block px-2.5 py-1.5 rounded-lg hover:text-[#2E3192] hover:bg-slate-100/80 transition-all shrink-0"
+              className="px-2.5 py-1.5 rounded-lg text-slate-700 hover:text-[#2E3192] hover:bg-slate-100/80 transition-all shrink-0"
             >
               Vídeos
             </a>
             <a 
               href="#depoimentos" 
-              className="hidden xl:inline-block px-2.5 py-1.5 rounded-lg hover:text-[#2E3192] hover:bg-slate-100/80 transition-all shrink-0"
+              className="px-2.5 py-1.5 rounded-lg text-slate-700 hover:text-[#2E3192] hover:bg-slate-100/80 transition-all shrink-0"
             >
               Depoimentos
             </a>
-            {(siteSettings.blog_exibir !== false && (siteSettings.artigos_blog?.length || 0) > 0) && (
-              <a 
-                href="#blog" 
-                className="hidden xl:inline-block px-2.5 py-1.5 rounded-lg hover:text-[#2E3192] hover:bg-slate-100/80 transition-all shrink-0"
-              >
-                Blog
-              </a>
-            )}
             <a 
-              href="#indique-e-ganhe" 
-              className="hidden 2xl:inline-block px-2.5 py-1.5 rounded-lg text-amber-700 hover:text-amber-800 hover:bg-amber-50/70 font-semibold transition-all shrink-0"
+              href="#blog" 
+              className="px-2.5 py-1.5 rounded-lg text-slate-700 hover:text-[#2E3192] hover:bg-slate-100/80 transition-all shrink-0"
             >
-              Indique
+              Blog
             </a>
             <a 
               href="#area-cliente" 
-              className="px-2.5 py-1.5 rounded-lg text-[#2E3192] font-semibold hover:bg-indigo-50/80 transition-all shrink-0"
+              className="hidden 2xl:inline-block px-2.5 py-1.5 rounded-lg text-[#2E3192] font-semibold hover:bg-indigo-50/80 transition-all shrink-0"
             >
               Área do Cliente
             </a>
@@ -552,16 +544,14 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
                 <span>Depoimentos</span>
                 <ArrowRight className="w-4 h-4 text-slate-400" />
               </a>
-              {(siteSettings.blog_exibir !== false && (siteSettings.artigos_blog?.length || 0) > 0) && (
-                <a
-                  href="#blog"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3.5 py-2.5 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-between"
-                >
-                  <span>Blog</span>
-                  <ArrowRight className="w-4 h-4 text-slate-400" />
-                </a>
-              )}
+              <a
+                href="#blog"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3.5 py-2.5 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-between"
+              >
+                <span>Blog</span>
+                <ArrowRight className="w-4 h-4 text-slate-400" />
+              </a>
               <a
                 href="#indique-e-ganhe"
                 onClick={() => setMobileMenuOpen(false)}
@@ -667,7 +657,7 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
             {/* Left Column: Sales Copy */}
             <div className="lg:col-span-7 space-y-6">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight font-display text-white">
-                {siteSettings.secao_hero_titulo || 'Seu imóvel 100% legalizado com escritura definitiva direto no cartório'}
+                {siteSettings.secao_hero_titulo || 'Seu imóvel 100% legalizado com escrituração direto no cartório'}
               </h1>
 
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl font-normal">
@@ -691,7 +681,7 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
                     <CheckCircle2 className="w-4 h-4" />
                   </div>
                   <div>
-                    <strong className="block text-xs text-white font-bold">Valorização de até 40%</strong>
+                    <strong className="block text-xs text-white font-bold">Valorização de até 50%</strong>
                     <span className="text-[11px] text-slate-300">Aceita financiamento Caixa, Itaú e Bradesco.</span>
                   </div>
                 </div>
@@ -977,10 +967,10 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
             </div>
             <div>
               <h4 className="font-extrabold text-sm sm:text-base leading-tight">
-                {siteSettings.banner_alerta_titulo || 'Atenção: Imóvel sem escritura definitiva perde até 40% do valor de mercado'}
+                {siteSettings.banner_alerta_titulo || 'Cuidado: imóvel sem escritura definitiva perde até 50% do valor de mercado'}
               </h4>
               <p className="text-xs text-slate-900 font-medium">
-                {siteSettings.banner_alerta_subtitulo || 'Não aceita financiamento bancário pela Caixa, Bradesco ou Itaú e corre risco de penhora por dívidas de terceiros.'}
+                {siteSettings.banner_alerta_subtitulo || 'Imóveis irregulares não aceitam financiamento bancário pela Caixa, Bradesco ou Itaú, correm risco de penhora por dívidas de antigos donos e geram inventários litigiosos caros.'}
               </p>
             </div>
           </div>
@@ -1002,7 +992,7 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              Ferramenta Exclusiva Brasil Legal
+              Diagnóstico inteligente e gratuito
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight font-display">
               Raio-X do Imóvel
@@ -1010,6 +1000,15 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
             <p className="text-xs sm:text-sm text-slate-300">
               Faça um diagnóstico inteligente em 7 etapas rápidas e descubra a rota exata para obter a escritura definitiva do seu imóvel.
             </p>
+            <div className="pt-1">
+              <a
+                href="#raio-x-form"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs shadow-lg transition-all"
+              >
+                <span>Clicar para avançar</span>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-950" />
+              </a>
+            </div>
           </div>
           <RaioXImovel 
             id="raio-x-form"
@@ -1994,7 +1993,9 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
                   {siteSettings.rodape_descricao || 'Assessoria jurídica e técnica especializada em regularização fundiária urbana e rural, usucapião extrajudicial e saneamento de matrículas em todo o território nacional.'}
                 </p>
                 <div className="space-y-1 text-[11px] text-slate-400 font-mono pt-1">
-                  <p>CNPJ: {siteSettings.rodape_cnpj || appSettings.cnpj_empresa || '38.491.820/0001-55'}</p>
+                  {siteSettings.rodape_exibir_cnpj && siteSettings.rodape_cnpj && !siteSettings.rodape_cnpj.includes('00.000.000') && (
+                    <p>CNPJ: {siteSettings.rodape_cnpj}</p>
+                  )}
                   {siteSettings.rodape_endereco && (
                     <p className="flex items-center gap-1.5 text-slate-400 font-sans">
                       <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />

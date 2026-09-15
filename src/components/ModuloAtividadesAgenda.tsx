@@ -254,11 +254,12 @@ export const ModuloAtividadesAgenda: React.FC<ModuloAtividadesAgendaProps> = ({
     onDeleteAtividade(id);
     setAtividadeParaExcluir(null);
     setIsModalOpen(false);
+    setEditingAtividade(null);
     setFeedbackMensagem(`Atividade "${titulo}" foi excluída com sucesso.`);
     setTimeout(() => setFeedbackMensagem(null), 4000);
     sendDesktopNotification({
       tipo: 'GERAL',
-      titulo: '🗑️ Atividade Excluída',
+      titulo: 'Atividade Excluída',
       mensagem: `A atividade "${titulo}" foi removida da agenda.`,
       link_aba: 'atividades'
     });
@@ -733,7 +734,10 @@ export const ModuloAtividadesAgenda: React.FC<ModuloAtividadesAgendaProps> = ({
                           {/* Excluir */}
                           <button
                             type="button"
-                            onClick={() => setAtividadeParaExcluir(item)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setAtividadeParaExcluir(item);
+                            }}
                             className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                             title="Excluir Atividade"
                           >
@@ -845,7 +849,10 @@ export const ModuloAtividadesAgenda: React.FC<ModuloAtividadesAgendaProps> = ({
                     </button>
                     <button
                       type="button"
-                      onClick={() => setAtividadeParaExcluir(item)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAtividadeParaExcluir(item);
+                      }}
                       className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                       title="Excluir Atividade"
                     >
@@ -948,7 +955,10 @@ export const ModuloAtividadesAgenda: React.FC<ModuloAtividadesAgendaProps> = ({
                             </button>
                             <button
                               type="button"
-                              onClick={() => setAtividadeParaExcluir(item)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setAtividadeParaExcluir(item);
+                              }}
                               className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
                               title="Excluir Atividade"
                             >
@@ -1265,7 +1275,11 @@ export const ModuloAtividadesAgenda: React.FC<ModuloAtividadesAgendaProps> = ({
                 {editingAtividade ? (
                   <button
                     type="button"
-                    onClick={() => setAtividadeParaExcluir(editingAtividade)}
+                    onClick={() => {
+                      const itemParaExcluir = editingAtividade;
+                      setIsModalOpen(false);
+                      setAtividadeParaExcluir(itemParaExcluir);
+                    }}
                     className="px-3 py-2 text-xs font-bold text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 hover:border-red-300 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -1298,7 +1312,7 @@ export const ModuloAtividadesAgenda: React.FC<ModuloAtividadesAgendaProps> = ({
 
       {/* 6. Modal de Confirmação de Exclusão de Atividade */}
       {atividadeParaExcluir && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
           <div 
             className="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-150 p-6"
             role="dialog"

@@ -325,6 +325,7 @@ export interface SiteSettings {
   faixa_topo_link_texto?: string;
   // Personalização do Rodapé / Footer
   rodape_exibir?: boolean;
+  rodape_exibir_cnpj?: boolean;
   rodape_titulo?: string;
   rodape_tag?: string;
   rodape_razao_social?: string;

@@ -330,6 +330,22 @@ Gostaria de receber a análise com um especialista.`
             Descubra quais pontos podem estar impedindo seu imóvel de estar regularizado, seguro e valorizado para venda ou financiamento.
           </p>
 
+          {!concluido && (
+            <div className="pt-3">
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('raio-x-form-body');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#F2EC00] hover:bg-[#ffe600] text-[#1C1E63] font-bold text-xs shadow-md hover:shadow-lg transition-all cursor-pointer"
+              >
+                <span>Clicar para avançar</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
           {/* Progress Indicator */}
           {!concluido && (
             <div className="mt-6 max-w-md mx-auto">
@@ -348,7 +364,7 @@ Gostaria de receber a análise com um especialista.`
         </div>
 
         {/* Form Body */}
-        <div className="p-6 sm:p-8 text-slate-900">
+        <div id="raio-x-form-body" className="p-6 sm:p-8 text-slate-900 scroll-mt-24">
           {concluido ? (
             <div className="py-8 text-center max-w-lg mx-auto space-y-6">
               <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
@@ -433,26 +449,37 @@ Gostaria de receber a análise com um especialista.`
                           onClick={() => {
                             setProblema(opt.label);
                             setErroValidacao('');
+                            setTimeout(() => {
+                              setEtapa(2);
+                            }, 120);
                           }}
-                          className={`group p-3.5 rounded-xl text-left border transition-all flex items-start gap-3 cursor-pointer ${
+                          className={`group p-3.5 rounded-xl text-left border transition-all flex flex-col justify-between cursor-pointer ${
                             isSelected
                               ? 'border-[#2E3192] bg-indigo-50/70 shadow-xs ring-1 ring-[#2E3192]'
                               : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
                           }`}
                         >
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                            isSelected
-                              ? 'bg-[#2E3192] text-white shadow-xs'
-                              : 'bg-slate-100 text-[#2E3192] group-hover:bg-indigo-100'
-                          }`}>
-                            <Icon className="w-4 h-4" />
-                          </div>
-                          <div className="min-w-0 pt-0.5">
-                            <p className={`text-xs sm:text-sm font-semibold leading-snug ${
-                              isSelected ? 'text-[#1C1E63]' : 'text-slate-800'
+                          <div className="flex items-start gap-3 w-full">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                              isSelected
+                                ? 'bg-[#2E3192] text-white shadow-xs'
+                                : 'bg-slate-100 text-[#2E3192] group-hover:bg-indigo-100'
                             }`}>
-                              {opt.label}
-                            </p>
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0 pt-0.5">
+                              <p className={`text-xs sm:text-sm font-semibold leading-snug ${
+                                isSelected ? 'text-[#1C1E63]' : 'text-slate-800'
+                              }`}>
+                                {opt.label}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="mt-2.5 pt-2 border-t border-slate-100 w-full flex items-center justify-end">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#2E3192] group-hover:text-indigo-900">
+                              Clicar para avançar
+                              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                            </span>
                           </div>
                         </button>
                       );
@@ -485,25 +512,36 @@ Gostaria de receber a análise com um especialista.`
                           onClick={() => {
                             setObjetivo(opt.label);
                             setErroValidacao('');
+                            setTimeout(() => {
+                              setEtapa(3);
+                            }, 120);
                           }}
-                          className={`group p-4 rounded-xl text-left border transition-all flex items-start gap-3 cursor-pointer ${
+                          className={`group p-4 rounded-xl text-left border transition-all flex flex-col justify-between cursor-pointer ${
                             isSelected
                               ? 'border-[#2E3192] bg-indigo-50/70 shadow-xs ring-1 ring-[#2E3192]'
                               : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
                           }`}
                         >
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                            isSelected
-                              ? 'bg-[#2E3192] text-white shadow-xs'
-                              : 'bg-slate-100 text-[#2E3192] group-hover:bg-indigo-100'
-                          }`}>
-                            <Icon className="w-4 h-4" />
+                          <div className="flex items-start gap-3 w-full">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                              isSelected
+                                ? 'bg-[#2E3192] text-white shadow-xs'
+                                : 'bg-slate-100 text-[#2E3192] group-hover:bg-indigo-100'
+                            }`}>
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className={`text-sm font-bold ${isSelected ? 'text-[#1C1E63]' : 'text-slate-900'}`}>
+                                {opt.label}
+                              </p>
+                              <p className="text-xs text-slate-500 mt-1 leading-relaxed">{opt.desc}</p>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <p className={`text-sm font-bold ${isSelected ? 'text-[#1C1E63]' : 'text-slate-900'}`}>
-                              {opt.label}
-                            </p>
-                            <p className="text-xs text-slate-500 mt-1 leading-relaxed">{opt.desc}</p>
+                          <div className="mt-3 pt-2 border-t border-slate-100 w-full flex items-center justify-end">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#2E3192] group-hover:text-indigo-900">
+                              Clicar para avançar
+                              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                            </span>
                           </div>
                         </button>
                       );
@@ -656,25 +694,36 @@ Gostaria de receber a análise com um especialista.`
                           onClick={() => {
                             setConstrucaoAverbada(opt.val as any);
                             setErroValidacao('');
+                            setTimeout(() => {
+                              setEtapa(5);
+                            }, 120);
                           }}
-                          className={`group w-full p-4 rounded-xl text-left border transition-all flex items-start gap-3.5 cursor-pointer ${
+                          className={`group w-full p-4 rounded-xl text-left border transition-all flex flex-col justify-between cursor-pointer ${
                             isSelected
                               ? 'border-[#2E3192] bg-indigo-50/70 shadow-xs ring-1 ring-[#2E3192]'
                               : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
                           }`}
                         >
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                            isSelected
-                              ? 'bg-[#2E3192] text-white shadow-xs'
-                              : 'bg-slate-100 text-[#2E3192] group-hover:bg-indigo-100'
-                          }`}>
-                            <Icon className="w-4 h-4" />
+                          <div className="flex items-start gap-3.5 w-full">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                              isSelected
+                                ? 'bg-[#2E3192] text-white shadow-xs'
+                                : 'bg-slate-100 text-[#2E3192] group-hover:bg-indigo-100'
+                            }`}>
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className={`text-sm font-bold ${isSelected ? 'text-[#1C1E63]' : 'text-slate-900'}`}>
+                                {opt.titulo}
+                              </p>
+                              <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{opt.desc}</p>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <p className={`text-sm font-bold ${isSelected ? 'text-[#1C1E63]' : 'text-slate-900'}`}>
-                              {opt.titulo}
-                            </p>
-                            <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{opt.desc}</p>
+                          <div className="mt-2.5 pt-2 border-t border-slate-100 w-full flex items-center justify-end">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#2E3192] group-hover:text-indigo-900">
+                              Clicar para avançar
+                              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                            </span>
                           </div>
                         </button>
                       );
@@ -834,7 +883,7 @@ Gostaria de receber a análise com um especialista.`
                     onClick={handleProximaEtapa}
                     className="px-6 py-2.5 rounded-xl bg-[#2E3192] hover:bg-[#1C1E63] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer ml-auto"
                   >
-                    <span>Continuar</span>
+                    <span>Clicar para avançar</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
