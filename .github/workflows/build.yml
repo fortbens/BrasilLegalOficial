@@ -1,28 +1,32 @@
-name: Build Website
+name: Build e Deploy Brasil Legal
 
 on:
-  workflow_dispatch:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Baixar codigo
+        uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Configurar Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install and Build
+      - name: Instalar dependencias e compilar
         run: |
           npm install
           npm run build
 
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
+      - name: Enviar via FTP para a Homehost
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          name: dist-site
-          path: dist/
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ./brasillegal.com.br/
