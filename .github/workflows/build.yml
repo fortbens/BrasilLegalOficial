@@ -30,3 +30,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
           server-dir: ./brasillegal.com.br/
+          exclude: |
+                  **/*.json
+                  **/uploads/**
+                  **/config/** 
