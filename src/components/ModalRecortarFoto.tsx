@@ -235,10 +235,10 @@ export const ModalRecortarFoto: React.FC<ModalRecortarFotoProps> = ({
       const drawH = baseHeight * scaleFactor;
       ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
 
-      // Exporta em JPEG otimizado
+      // Exporta em JPEG otimizado (400x400 ~30KB) que é 100% persistível no Firestore e nunca expira
       let dataUrl = '';
       try {
-        dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        dataUrl = canvas.toDataURL('image/jpeg', 0.82);
       } catch (canvasErr) {
         console.warn('Canvas export protegido, usando foto original:', canvasErr);
         onCropComplete(currentImageSrc);
@@ -246,34 +246,23 @@ export const ModalRecortarFoto: React.FC<ModalRecortarFotoProps> = ({
         return;
       }
 
-      // Envia ao servidor Express (/public/uploads) para gerar URL estática limpa
-      let finalUrl = dataUrl;
+      // Mantém a foto em dataUrl otimizada diretamente para que o Firebase Firestore sincronize
+      // instantaneamente em todos os celulares, tablets e cPanel sem depender de upload em disco local.
+      // Opcionalmente tenta enviar ao servidor Express em segundo plano se disponível.
       try {
-        const uploadReq = fetch('/api/upload', {
+        fetch('/api/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             dataUrl,
             filename: `especialista_${Date.now()}`
           })
-        });
-
-        const uploadTimeout = new Promise<Response>((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout upload')), 3000)
-        );
-        const res = await Promise.race([uploadReq, uploadTimeout]);
-
-        if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
-          const json = await res.json();
-          if (json.url) {
-            finalUrl = json.url;
-          }
-        }
+        }).catch(() => {});
       } catch (uploadErr) {
-        console.warn('Usando dataUrl local como fallback rápido:', uploadErr);
+        // Ignora silenciosamente
       }
 
-      onCropComplete(finalUrl);
+      onCropComplete(dataUrl);
       onClose();
     } catch (err: any) {
       console.error('Erro ao recortar imagem:', err);

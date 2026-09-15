@@ -33,7 +33,7 @@ export const initialAppSettings: AppSettings = {
   endereco_empresa: 'Caieiras, São Paulo - SP',
   logo_header_url: '/assets/logo-brasil-legal-oficial.png',
   logo_light_url: '/assets/logo-brasil-legal-oficial.png',
-  logo_dark_url: '/assets/logo-brasil-legal-dark.svg',
+  logo_dark_url: '/assets/logo-brasil-legal-oficial.png',
   logo_icon_url: '/assets/logo-icon-brasil-legal.svg',
   logo_sidebar_url: '/assets/logo-brasil-legal-oficial.png',
   logo_login_url: '/assets/logo-brasil-legal-oficial.png',
@@ -208,7 +208,7 @@ export const initialSiteSettings: SiteSettings = {
   titulo_site: 'Brasil Legal — Regularização Imobiliária & Gestão de Ativos',
   subtitulo_site: 'Engenharia legal, advocacia registral e saneamento fundiário ágil para proprietários, incorporadores e prefeituras.',
   logo_principal_url: '/assets/logo-brasil-legal-oficial.png',
-  logo_footer_url: '/assets/logo-brasil-legal-dark.svg',
+  logo_footer_url: '/assets/logo-brasil-legal-oficial.png',
   css_customizado: `/* CSS Injetado do Módulo CMS Brasil Legal */
 .brasil-legal-brand-badge {
   box-shadow: 0 4px 20px -2px rgba(46, 49, 146, 0.25);

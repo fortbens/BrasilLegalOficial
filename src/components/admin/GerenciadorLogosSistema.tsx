@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AppSettings, SiteSettings } from '../../types';
 import { ImageUploadInput } from '../ImageUploadInput';
 import { BRASIL_LEGAL_LOGO_PRESETS } from '../../utils/logoPresets';
+import { compressImage } from '../../utils/imageCompressor';
 import { 
   ImageIcon, 
   Save, 
@@ -62,34 +63,42 @@ export const GerenciadorLogosSistema: React.FC<GerenciadorLogosSistemaProps> = (
       logo_login_url: appSettings.logo_login_url || appSettings.logo_header_url || '/assets/logo-brasil-legal-oficial.png',
       logo_header_url: appSettings.logo_header_url || '/assets/logo-brasil-legal-oficial.png',
       logo_light_url: appSettings.logo_light_url || '/assets/logo-brasil-legal-oficial.png',
-      logo_dark_url: appSettings.logo_dark_url || '/assets/logo-brasil-legal-dark.svg',
+      logo_dark_url: appSettings.logo_dark_url || '/assets/logo-brasil-legal-oficial.png',
       logo_icon_url: appSettings.logo_icon_url || '/assets/logo-icon-brasil-legal.svg',
       favicon_url: appSettings.favicon_url || '/assets/logo-icon-brasil-legal.svg'
     });
   }, [appSettings]);
 
-  // Upload permanentemente qualquer imagem data:base64 para o servidor
+  // Otimiza e comprime logotipos em base64 para persistência leve e permanente em nuvem (Firestore e LocalStorage)
   const uploadPermanentFile = async (dataUrl: string, prefix: string): Promise<string> => {
     if (!dataUrl || !dataUrl.startsWith('data:')) {
       return dataUrl;
     }
     try {
-      const res = await fetch('/api/upload', {
+      // Comprime a logo para caber confortavelmente no Firestore (< 50KB) com máxima nitidez
+      const compressed = await compressImage(dataUrl, {
+        maxWidth: 550,
+        maxHeight: 220,
+        quality: 0.88,
+        format: 'image/png'
+      });
+
+      // Tenta registrar no servidor Express para cache estático opcional se disponível
+      fetch('/api/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          dataUrl,
+          dataUrl: compressed,
           filename: `${prefix}_${Date.now()}`
         })
-      });
-      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
-        const data = await res.json();
-        if (data.url) return data.url;
-      }
+      }).catch(() => {});
+
+      // Retorna a URI compacta auto-contida para que funcione em 100% dos dispositivos e em cPanel
+      return compressed;
     } catch (e) {
-      console.warn('[Upload] Falha ao enviar imagem, mantendo URI:', e);
+      console.warn('[Upload] Falha ao comprimir imagem, mantendo original:', e);
+      return dataUrl;
     }
-    return dataUrl;
   };
 
   const handleSaveDefinitivo = async (e?: React.FormEvent) => {

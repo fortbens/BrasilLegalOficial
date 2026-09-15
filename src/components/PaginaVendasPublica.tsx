@@ -1293,10 +1293,25 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
                     <div className="flex items-center gap-3.5 mb-3.5">
                       <div className="relative w-16 h-16 rounded-2xl overflow-hidden shrink-0 border-2 border-indigo-100 shadow-xs bg-slate-100">
                         <img
-                          src={membro.foto_url || '/team/emerson-carneiro.jpg'}
+                          src={membro.foto_url || (
+                            membro.id === 'eq-2' ? '/team/talita-hernandez.jpg' :
+                            membro.id === 'eq-3' ? '/team/elisangela-cruz.jpg' :
+                            membro.id === 'eq-4' ? '/team/dr-rafael-barbosa.jpg' :
+                            '/team/emerson-carneiro.jpg'
+                          )}
                           alt={membro.nome}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            const target = e.currentTarget as HTMLImageElement;
+                            const fallback = membro.id === 'eq-2' ? '/team/talita-hernandez.jpg' :
+                              membro.id === 'eq-3' ? '/team/elisangela-cruz.jpg' :
+                              membro.id === 'eq-4' ? '/team/dr-rafael-barbosa.jpg' :
+                              '/team/emerson-carneiro.jpg';
+                            if (!target.src.endsWith(fallback)) {
+                              target.src = fallback;
+                            }
+                          }}
                         />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -1980,29 +1995,49 @@ export const PaginaVendasPublica: React.FC<PaginaVendasPublicaProps> = ({
           <div className="max-w-6xl mx-auto space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div className="md:col-span-2 space-y-3">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={siteSettings.logo_footer_url || '/assets/logo-brasil-legal-dark.svg'}
-                    alt={siteSettings.rodape_titulo || appSettings.app_name || 'Brasil Legal'}
-                    className="h-10 w-auto max-w-[180px] object-contain"
-                    onError={(e) => {
-                      const target = e.currentTarget as HTMLImageElement;
-                      if (!target.src.includes('/assets/logo-brasil-legal-dark.svg')) {
-                        target.src = '/assets/logo-brasil-legal-dark.svg';
-                      }
-                    }}
-                  />
-                  <div className="font-display font-extrabold text-lg text-white tracking-wide flex items-center gap-2">
-                    {siteSettings.rodape_titulo || appSettings.app_name || 'BRASIL LEGAL'}
-                    {(siteSettings.rodape_tag || 'CARTÓRIOS & REGISTROS') && (
-                      <span 
-                        className="text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider"
-                        style={{ backgroundColor: corSecundaria, color: corPrimaria }}
-                      >
-                        {siteSettings.rodape_tag || 'CARTÓRIOS & REGISTROS'}
-                      </span>
-                    )}
-                  </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  {siteSettings.logo_footer_url ? (
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={siteSettings.logo_footer_url}
+                        alt={siteSettings.rodape_titulo || appSettings.app_name || 'Brasil Legal'}
+                        className="h-10 sm:h-11 w-auto max-w-[210px] object-contain"
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          if (!target.src.includes('/assets/logo-brasil-legal-oficial.png')) {
+                            target.src = '/assets/logo-brasil-legal-oficial.png';
+                          }
+                        }}
+                      />
+                      {(siteSettings.rodape_tag || 'CARTÓRIOS & REGISTROS') && (
+                        <span 
+                          className="text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider shrink-0"
+                          style={{ backgroundColor: corSecundaria, color: corPrimaria }}
+                        >
+                          {siteSettings.rodape_tag || 'CARTÓRIOS & REGISTROS'}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2.5">
+                      <img
+                        src="/assets/logo-icon-brasil-legal.svg"
+                        alt="Ícone Brasil Legal"
+                        className="h-8 w-8 object-contain"
+                      />
+                      <div className="font-display font-extrabold text-lg text-white tracking-wide flex items-center gap-2">
+                        {siteSettings.rodape_titulo || appSettings.app_name || 'BRASIL LEGAL'}
+                        {(siteSettings.rodape_tag || 'CARTÓRIOS & REGISTROS') && (
+                          <span 
+                            className="text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider"
+                            style={{ backgroundColor: corSecundaria, color: corPrimaria }}
+                          >
+                            {siteSettings.rodape_tag || 'CARTÓRIOS & REGISTROS'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <p className="text-xs text-slate-300 font-medium">
                   {siteSettings.rodape_razao_social || appSettings.razao_social || 'Brasil Legal Soluções Imobiliárias e Registrais Ltda'}

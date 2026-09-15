@@ -11,6 +11,7 @@ import {
   Crop
 } from 'lucide-react';
 import { ModalRecortarFoto } from './ModalRecortarFoto';
+import { compressImage } from '../utils/imageCompressor';
 
 interface PresetOption {
   label: string;
@@ -76,22 +77,34 @@ export const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     }
 
     setIsUploading(true);
-    const reader = new FileReader();
+    const isPngOrSvg = file.type === 'image/png' || file.type === 'image/svg+xml' || file.name.endsWith('.svg') || file.name.endsWith('.png');
 
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      if (result) {
-        onChange(result);
+    compressImage(file, {
+      maxWidth: isPngOrSvg ? 640 : 480,
+      maxHeight: isPngOrSvg ? 640 : 480,
+      quality: 0.85,
+      format: isPngOrSvg ? 'image/png' : 'image/jpeg'
+    })
+      .then((compressedResult) => {
+        onChange(compressedResult);
         setIsUploading(false);
-      }
-    };
-
-    reader.onerror = () => {
-      setErrorMsg('Erro ao ler o arquivo. Tente novamente ou use uma URL.');
-      setIsUploading(false);
-    };
-
-    reader.readAsDataURL(file);
+      })
+      .catch(() => {
+        // Fallback para FileReader padrão
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          if (result) {
+            onChange(result);
+            setIsUploading(false);
+          }
+        };
+        reader.onerror = () => {
+          setErrorMsg('Erro ao ler o arquivo. Tente novamente ou use uma URL.');
+          setIsUploading(false);
+        };
+        reader.readAsDataURL(file);
+      });
   };
 
   const handleDrag = (e: React.DragEvent) => {

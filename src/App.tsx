@@ -506,8 +506,8 @@ export default function App() {
         if (!s.logo_principal_url || s.logo_principal_url === '/assets/logo-brasil-legal.svg' || s.logo_principal_url.includes('brasillegalimoveis.com.br')) {
           s.logo_principal_url = '/assets/logo-brasil-legal-oficial.png';
         }
-        if (!s.logo_footer_url || s.logo_footer_url.includes('brasillegalimoveis.com.br')) {
-          s.logo_footer_url = '/assets/logo-brasil-legal-dark.svg';
+        if (!s.logo_footer_url || s.logo_footer_url === '/assets/logo-brasil-legal-dark.svg' || s.logo_footer_url.includes('brasillegalimoveis.com.br')) {
+          s.logo_footer_url = '/assets/logo-brasil-legal-oficial.png';
         }
         if (!s.rodape_email || s.rodape_email.includes('brasillegalimoveis.com.br') || s.rodape_email === 'diretorcarneiro@gmail.com') {
           s.rodape_email = 'atendimento@brasillegal.com.br';
@@ -539,8 +539,8 @@ export default function App() {
         if (!a.logo_light_url || a.logo_light_url === '/assets/logo-brasil-legal-light.svg' || a.logo_light_url.includes('brasillegalimoveis.com.br')) {
           a.logo_light_url = '/assets/logo-brasil-legal-oficial.png';
         }
-        if (!a.logo_dark_url || a.logo_dark_url.includes('brasillegalimoveis.com.br')) {
-          a.logo_dark_url = '/assets/logo-brasil-legal-dark.svg';
+        if (!a.logo_dark_url || a.logo_dark_url === '/assets/logo-brasil-legal-dark.svg' || a.logo_dark_url.includes('brasillegalimoveis.com.br')) {
+          a.logo_dark_url = '/assets/logo-brasil-legal-oficial.png';
         }
         if (!a.logo_icon_url || a.logo_icon_url.includes('brasillegalimoveis.com.br')) {
           a.logo_icon_url = '/assets/logo-icon-brasil-legal.svg';
@@ -779,6 +779,44 @@ export default function App() {
 
   useEffect(() => {
     refreshAllData();
+
+    // Sincronização em tempo real via Firestore:
+    // Garante que fotos da equipe, logos e textos alterados no CMS persistam
+    // e atualizem imediatamente em todos os dispositivos (celulares, tablets e cPanel)
+    const unsubSite = assinarSiteSettings((remoteSite) => {
+      if (remoteSite && typeof remoteSite === 'object') {
+        setSiteSettings(prev => {
+          const merged = { ...prev, ...remoteSite };
+          if (merged.logo_footer_url === '/assets/logo-brasil-legal-dark.svg') {
+            merged.logo_footer_url = '/assets/logo-brasil-legal-oficial.png';
+          }
+          try {
+            localStorage.setItem('brasil_legal_site_settings', JSON.stringify(merged));
+          } catch (e) {}
+          return merged;
+        });
+      }
+    });
+
+    const unsubApp = assinarAppSettings((remoteApp) => {
+      if (remoteApp && typeof remoteApp === 'object') {
+        setAppSettings(prev => {
+          const merged = { ...prev, ...remoteApp };
+          if (merged.logo_dark_url === '/assets/logo-brasil-legal-dark.svg') {
+            merged.logo_dark_url = '/assets/logo-brasil-legal-oficial.png';
+          }
+          try {
+            localStorage.setItem('brasil_legal_app_settings', JSON.stringify(merged));
+          } catch (e) {}
+          return merged;
+        });
+      }
+    });
+
+    return () => {
+      unsubSite();
+      unsubApp();
+    };
   }, []);
 
   // Update active tab automatically when role changes if current tab is forbidden
